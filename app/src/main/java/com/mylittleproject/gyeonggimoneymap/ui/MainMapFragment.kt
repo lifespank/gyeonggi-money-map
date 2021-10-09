@@ -5,12 +5,16 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.mylittleproject.gyeonggimoneymap.R
 import com.mylittleproject.gyeonggimoneymap.databinding.FragmentMapBinding
-import net.daum.mf.map.api.MapView
+import com.naver.maps.map.MapFragment
+import com.naver.maps.map.NaverMap
+import com.naver.maps.map.OnMapReadyCallback
 
-class MapFragment : Fragment() {
+class MainMapFragment : Fragment(), OnMapReadyCallback {
     private var _binding: FragmentMapBinding? = null
     private val binding get() = _binding!!
+    private lateinit var naverMap : NaverMap
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -23,13 +27,20 @@ class MapFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val mapView = MapView(requireContext())
-        val mapViewContainer = binding.root as ViewGroup
-        mapViewContainer.addView(mapView)
+        val fm = childFragmentManager
+        val mapFragment = fm.findFragmentById(R.id.map_fragment) as MapFragment?
+            ?: MapFragment.newInstance().also {
+                fm.beginTransaction().add(R.id.map_fragment, it).commit()
+            }
+        mapFragment.getMapAsync(this)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onMapReady(naverMap: NaverMap) {
+        this.naverMap = naverMap
     }
 }

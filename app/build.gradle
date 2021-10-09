@@ -51,4 +51,5 @@ dependencies {
     androidTestImplementation "androidx.navigation:navigation-testing:$nav_version"
     implementation "androidx.navigation:navigation-compose:2.4.0-alpha10"
     implementation files('libs/libDaumMapAndroid.jar')
+    implementation 'com.naver.maps:map-sdk:3.12.0'
 }

@@ -20,6 +20,9 @@
         <meta-data
             android:name="com.kakao.sdk.AppKey"
             android:value="9a207fc665035198241e8bbbdec258ec" />
+        <meta-data
+            android:name="com.naver.maps.map.CLIENT_ID"
+            android:value="tinzi3vbvq" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
