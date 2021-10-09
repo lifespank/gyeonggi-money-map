@@ -1,6 +1,7 @@
 package com.mylittleproject.gyeonggimoneymap.ui
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,8 @@ import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.map.overlay.InfoWindow
+import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
 
 class MainMapFragment : Fragment(), OnMapReadyCallback {
@@ -21,6 +24,8 @@ class MainMapFragment : Fragment(), OnMapReadyCallback {
     private val binding get() = _binding!!
     private lateinit var naverMap: NaverMap
     private lateinit var locationSource: FusedLocationSource
+    private val markerList = mutableListOf<Marker>()
+    private var symbolMarker: Marker? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,12 +75,49 @@ class MainMapFragment : Fragment(), OnMapReadyCallback {
         this.naverMap = naverMap
         naverMap.locationSource = locationSource
         configMap()
+        setOnSymbolClickListener()
+        setOnMapClickListener()
+    }
+
+    private fun setOnMapClickListener() {
+        naverMap.setOnMapClickListener { pointF, latLng ->
+            symbolMarker?.infoWindow?.close()
+            symbolMarker?.map = null
+            symbolMarker = null
+        }
+    }
+
+    private fun setOnSymbolClickListener() {
+        naverMap.setOnSymbolClickListener { symbol ->
+            Log.d("symbol", symbol.toString())
+            symbolMarker?.let {
+                it.infoWindow?.close()
+                it.map = null
+            }
+            symbolMarker = null
+            if (symbol.caption.isNotEmpty()) {
+                symbolMarker = Marker()
+                symbolMarker?.let {
+                    it.position = symbol.position
+                    it.map = naverMap
+                    val infoWindow = InfoWindow()
+                    infoWindow.adapter = object : InfoWindow.DefaultTextAdapter(requireContext()) {
+                        override fun getText(infoWindow: InfoWindow): CharSequence {
+                            return symbol.caption
+                        }
+                    }
+                    infoWindow.open(it)
+                }
+            }
+            true
+        }
     }
 
     private fun configMap() {
         naverMap.minZoom = 15.0
         naverMap.maxZoom = 17.0
         naverMap.uiSettings.isLocationButtonEnabled = true
+        naverMap.uiSettings.isTiltGesturesEnabled = false
         naverMap.extent = LatLngBounds(LatLng(31.43, 122.37), LatLng(44.35, 132.0))
     }
 }
