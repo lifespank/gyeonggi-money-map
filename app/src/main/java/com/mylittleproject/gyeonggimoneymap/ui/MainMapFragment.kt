@@ -6,8 +6,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.mylittleproject.gyeonggimoneymap.R
 import com.mylittleproject.gyeonggimoneymap.common.LOCATION_PERMISSION_REQUEST_CODE
+import com.mylittleproject.gyeonggimoneymap.data.StoreCategory
 import com.mylittleproject.gyeonggimoneymap.databinding.FragmentMapBinding
 import com.mylittleproject.gyeonggimoneymap.presenter.MainMapContract
 import com.mylittleproject.gyeonggimoneymap.presenter.MainMapPresenter
@@ -29,6 +32,8 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
     private val markerList = mutableListOf<Marker>()
     private var symbolMarker: Marker? = null
     private lateinit var mainMapPresenter: MainMapContract.MainMapPresenter
+    private lateinit var catetoryRecyclerView: RecyclerView
+    private val adapter = CategoryListAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +59,9 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
                 fm.beginTransaction().add(R.id.map_fragment, it).commit()
             }
         mapFragment.getMapAsync(this)
+        catetoryRecyclerView = binding.rvCategory
+        catetoryRecyclerView.adapter = adapter
+        adapter.submitList(StoreCategory.toList())
     }
 
     override fun onDestroyView() {
