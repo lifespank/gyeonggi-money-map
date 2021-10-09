@@ -9,6 +9,8 @@ import android.view.ViewGroup
 import com.mylittleproject.gyeonggimoneymap.R
 import com.mylittleproject.gyeonggimoneymap.common.LOCATION_PERMISSION_REQUEST_CODE
 import com.mylittleproject.gyeonggimoneymap.databinding.FragmentMapBinding
+import com.mylittleproject.gyeonggimoneymap.presenter.MainMapContract
+import com.mylittleproject.gyeonggimoneymap.presenter.MainMapPresenter
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
 import com.naver.maps.map.LocationTrackingMode
@@ -19,13 +21,14 @@ import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
 
-class MainMapFragment : Fragment(), OnMapReadyCallback {
+class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapView {
     private var _binding: FragmentMapBinding? = null
     private val binding get() = _binding!!
     private lateinit var naverMap: NaverMap
     private lateinit var locationSource: FusedLocationSource
     private val markerList = mutableListOf<Marker>()
     private var symbolMarker: Marker? = null
+    private lateinit var mainMapPresenter: MainMapContract.MainMapPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +47,7 @@ class MainMapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        mainMapPresenter = MainMapPresenter(this)
         val fm = childFragmentManager
         val mapFragment = fm.findFragmentById(R.id.map_fragment) as MapFragment?
             ?: MapFragment.newInstance().also {
@@ -81,36 +85,35 @@ class MainMapFragment : Fragment(), OnMapReadyCallback {
 
     private fun setOnMapClickListener() {
         naverMap.setOnMapClickListener { pointF, latLng ->
-            symbolMarker?.infoWindow?.close()
-            symbolMarker?.map = null
-            symbolMarker = null
+            mainMapPresenter.onMapClick(pointF, latLng)
         }
     }
 
     private fun setOnSymbolClickListener() {
         naverMap.setOnSymbolClickListener { symbol ->
             Log.d("symbol", symbol.toString())
-            symbolMarker?.let {
-                it.infoWindow?.close()
-                it.map = null
-            }
-            symbolMarker = null
-            if (symbol.caption.isNotEmpty()) {
-                symbolMarker = Marker()
-                symbolMarker?.let {
-                    it.position = symbol.position
-                    it.map = naverMap
-                    val infoWindow = InfoWindow()
-                    infoWindow.adapter = object : InfoWindow.DefaultTextAdapter(requireContext()) {
-                        override fun getText(infoWindow: InfoWindow): CharSequence {
-                            return symbol.caption
-                        }
-                    }
-                    infoWindow.open(it)
-                }
-            }
+            mainMapPresenter.onSymbolClick(symbol)
             true
         }
+    }
+
+    override fun deleteMarker(marker: Marker) {
+        marker.infoWindow?.close()
+        marker.map = null
+    }
+
+    override fun displayMarker(marker: Marker) {
+        marker.map = naverMap
+    }
+
+    override fun attachInfoWindow(marker: Marker, caption: String) {
+        val infoWindow = InfoWindow()
+        infoWindow.adapter = object : InfoWindow.DefaultTextAdapter(requireContext()) {
+            override fun getText(infoWindow: InfoWindow): CharSequence {
+                return caption
+            }
+        }
+        infoWindow.open(marker)
     }
 
     private fun configMap() {
