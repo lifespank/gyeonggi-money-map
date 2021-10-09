@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/mapFragment"
-        android:name="com.mylittleproject.gyeonggimoneymap.MapFragment"
+        android:name="com.mylittleproject.gyeonggimoneymap.ui.MapFragment"
         android:label="fragment_map"
         tools:layout="@layout/fragment_map" />
 </navigation>
