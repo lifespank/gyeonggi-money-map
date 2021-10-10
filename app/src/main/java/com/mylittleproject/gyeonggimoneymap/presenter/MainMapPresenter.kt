@@ -7,7 +7,7 @@ import androidx.lifecycle.coroutineScope
 import com.mylittleproject.gyeonggimoneymap.network.CategorySearchHelper
 import com.mylittleproject.gyeonggimoneymap.network.Document
 import com.naver.maps.geometry.LatLng
-import com.naver.maps.map.Symbol
+import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
 import kotlinx.coroutines.launch
 import kotlin.math.min
@@ -19,22 +19,11 @@ class MainMapPresenter(
     private val lifecycle: Lifecycle
 ) :
     MainMapContract.MainMapPresenter {
-    private var symbolMarker: Marker? = null
     private val markerList = mutableListOf<Marker>()
-    override fun onMapClick(pointf: PointF, latLng: LatLng) {
-        symbolMarker?.let { mainMapView.deleteMarker(it) }
-    }
+    private val infoWindow = InfoWindow()
 
-    override fun onSymbolClick(symbol: Symbol) {
-        symbolMarker?.let { mainMapView.deleteMarker(it) }
-        if (symbol.caption.isNotEmpty()) {
-            symbolMarker = Marker()
-            symbolMarker?.let {
-                it.position = symbol.position
-                mainMapView.displayMarker(it)
-                mainMapView.attachInfoWindow(it, symbol.caption)
-            }
-        }
+    override fun onMapClick(pointf: PointF, latLng: LatLng) {
+        infoWindow.close()
     }
 
     override fun searchByCategory(code: String, cameraCoord: LatLng, leftUpperCoord: LatLng) {
@@ -52,13 +41,30 @@ class MainMapPresenter(
             searchList?.let {
                 markerList.addAll(it.map { document ->
                     val marker = Marker(LatLng(document.y.toDouble(), document.x.toDouble()))
+                    marker.isIconPerspectiveEnabled = true
+                    marker.captionText = document.placeName
                     mainMapView.displayMarker(marker)
-                    mainMapView.attachInfoWindow(marker, document.toString())
+                    marker.setOnClickListener { overlay ->
+                        onMarkerClick(overlay as Marker, document.toString())
+                        true
+                    }
                     marker
                 })
             }
             mainMapView.unDimMap()
             mainMapView.hideProgressIndicator()
+        }
+    }
+
+    private fun onMarkerClick(marker: Marker, infoString: String) {
+        markerList.forEach { otherMarker ->
+            otherMarker.zIndex = 0
+        }
+        marker.zIndex = 1
+        if (marker.infoWindow == null) {
+            mainMapView.attachInfoWindow(infoWindow, marker, infoString)
+        } else {
+            infoWindow.close()
         }
     }
 

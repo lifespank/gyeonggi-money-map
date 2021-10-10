@@ -87,21 +87,12 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
         this.naverMap = naverMap
         naverMap.locationSource = locationSource
         configMap()
-        setOnSymbolClickListener()
         setOnMapClickListener()
     }
 
     private fun setOnMapClickListener() {
         naverMap.setOnMapClickListener { pointF, latLng ->
             mainMapPresenter.onMapClick(pointF, latLng)
-        }
-    }
-
-    private fun setOnSymbolClickListener() {
-        naverMap.setOnSymbolClickListener { symbol ->
-            Log.d("symbol", symbol.toString())
-            mainMapPresenter.onSymbolClick(symbol)
-            true
         }
     }
 
@@ -114,8 +105,7 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
         marker.map = naverMap
     }
 
-    override fun attachInfoWindow(marker: Marker, caption: String) {
-        val infoWindow = InfoWindow()
+    override fun attachInfoWindow(infoWindow: InfoWindow, marker: Marker, caption: String) {
         infoWindow.adapter = object : InfoWindow.DefaultTextAdapter(requireContext()) {
             override fun getText(infoWindow: InfoWindow): CharSequence {
                 return caption
@@ -144,7 +134,7 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
         //naverMap.minZoom = 15.0
         naverMap.maxZoom = 17.0
         naverMap.uiSettings.isLocationButtonEnabled = true
-        naverMap.uiSettings.isTiltGesturesEnabled = false
+//        naverMap.uiSettings.isTiltGesturesEnabled = false
         naverMap.extent = LatLngBounds(LatLng(31.43, 122.37), LatLng(44.35, 132.0))
     }
 
