@@ -126,7 +126,7 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
     }
 
     private fun configMap() {
-        naverMap.minZoom = 15.0
+        //naverMap.minZoom = 15.0
         naverMap.maxZoom = 17.0
         naverMap.uiSettings.isLocationButtonEnabled = true
         naverMap.uiSettings.isTiltGesturesEnabled = false

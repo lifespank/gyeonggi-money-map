@@ -9,6 +9,7 @@ import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.Symbol
 import com.naver.maps.map.overlay.Marker
 import kotlinx.coroutines.launch
+import kotlin.math.min
 import kotlin.math.roundToInt
 
 class MainMapPresenter(
@@ -37,7 +38,7 @@ class MainMapPresenter(
     override fun searchByCategory(code: String, cameraCoord: LatLng, leftUpperCoord: LatLng) {
         val x = cameraCoord.longitude.toString()
         val y = cameraCoord.latitude.toString()
-        val radius = cameraCoord.distanceTo(leftUpperCoord).roundToInt()
+        val radius = min(cameraCoord.distanceTo(leftUpperCoord).roundToInt(), 500)
         lifecycle.coroutineScope.launch {
             val searchList = categorySearchHelper.searchByCategory(code, x, y, radius)
             Log.d("searchList", searchList.toString())
