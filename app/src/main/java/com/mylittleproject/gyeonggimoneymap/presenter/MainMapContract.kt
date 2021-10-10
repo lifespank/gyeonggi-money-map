@@ -2,7 +2,6 @@ package com.mylittleproject.gyeonggimoneymap.presenter
 
 import android.graphics.PointF
 import com.naver.maps.geometry.LatLng
-import com.naver.maps.map.Symbol
 import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
 
