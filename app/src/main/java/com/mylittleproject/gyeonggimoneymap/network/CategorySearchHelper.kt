@@ -67,19 +67,21 @@ object CategorySearchHelper {
         } else {
             Log.e("kakao error", "First Response Error")
         }
+
         val filteredDocumentList =
             documentList?.filter {
                 var isGood = false
                 val placeNameAddress = PlaceNameAddress(it.placeName, it.roadAddressName)
-                val gyeonggiResponse = apiServiceGyeonggi.searchGyeonggiMoneyPlace(
-                    GYEONGGI_KEY,
-                    "json",
-                    "1",
-                    "1",
-                    placeNameAddress.name,
-                    placeNameAddress.siGun,
-                    placeNameAddress.lastPartOfAddress
-                )
+                val gyeonggiResponse =
+                    apiServiceGyeonggi.searchGyeonggiMoneyPlace(
+                        GYEONGGI_KEY,
+                        "json",
+                        "1",
+                        "1",
+                        placeNameAddress.name,
+                        placeNameAddress.siGun,
+                        placeNameAddress.lastPartOfAddress
+                    )
                 if (gyeonggiResponse.isSuccessful) {
                     val data = gyeonggiResponse.body()
                     if (data != null
