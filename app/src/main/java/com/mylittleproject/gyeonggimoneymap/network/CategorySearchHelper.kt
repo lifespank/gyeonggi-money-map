@@ -73,7 +73,7 @@ object CategorySearchHelper {
             val filteredDocumentList =
                 documentList.filter {
                     var isGood = false
-                    if (it.addressName.substringBefore(" ") == "경기") {
+                    if (it.addressName.substringBefore(" ") == "경기" && it.roadAddressName.isNotEmpty()) {
                         val placeNameAddress = PlaceNameAddress(it.placeName, it.roadAddressName)
                         val gyeonggiResponse =
                             apiServiceGyeonggi.searchGyeonggiMoneyPlace(

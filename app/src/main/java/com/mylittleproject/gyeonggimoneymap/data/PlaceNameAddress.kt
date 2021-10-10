@@ -12,7 +12,7 @@ class PlaceNameAddress(beforeName: String, roadAddress: String) {
             val roadAddressSplit = roadAddress.split(" ")
             roadAddressSplit[roadAddressSplit.lastIndex - 1] + " " + roadAddressSplit[roadAddressSplit.lastIndex]
         } catch (e: Exception) {
-            Log.e("parse error", e.message.toString() + "\n" + roadAddress)
+            Log.e("parse error", "${e.message.toString()} $roadAddress")
             ""
         }
     }
