@@ -9,7 +9,7 @@ import com.mylittleproject.gyeonggimoneymap.R
 import com.mylittleproject.gyeonggimoneymap.data.StoreCategory
 import com.mylittleproject.gyeonggimoneymap.databinding.RecyclerViewItemCategoryBinding
 
-class CategoryListAdapter(private val onItemClick: (String) -> Unit) :
+class CategoryListAdapter(private val onItemClick: (String, Int) -> Unit) :
     ListAdapter<StoreCategory, CategoryListAdapter.CategoryViewHolder>(object :
         DiffUtil.ItemCallback<StoreCategory>() {
         override fun areItemsTheSame(oldItem: StoreCategory, newItem: StoreCategory): Boolean {
@@ -20,7 +20,7 @@ class CategoryListAdapter(private val onItemClick: (String) -> Unit) :
             return oldItem.code == newItem.code && oldItem.korean == newItem.korean
         }
     }) {
-    private var selectedPosition = -1
+    var selectedPosition = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {
         return CategoryViewHolder(
@@ -42,11 +42,7 @@ class CategoryListAdapter(private val onItemClick: (String) -> Unit) :
 
         init {
             itemView.setOnClickListener {
-                val prevPosition = selectedPosition
-                selectedPosition = adapterPosition
-                notifyItemChanged(prevPosition)
-                notifyItemChanged(selectedPosition)
-                onItemClick(code)
+                onItemClick(code, adapterPosition)
             }
         }
 

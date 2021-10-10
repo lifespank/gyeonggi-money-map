@@ -15,6 +15,8 @@ interface MainMapContract {
         fun hideProgressIndicator()
         fun dimMap()
         fun unDimMap()
+        fun enableCategoryClick()
+        fun disableCategoryClick()
     }
     interface  MainMapPresenter {
         fun onMapClick(pointf: PointF, latLng: LatLng)

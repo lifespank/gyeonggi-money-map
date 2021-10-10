@@ -33,7 +33,8 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
     private lateinit var locationSource: FusedLocationSource
     private lateinit var mainMapPresenter: MainMapContract.MainMapPresenter
     private lateinit var catetoryRecyclerView: RecyclerView
-    private val adapter = CategoryListAdapter { code -> onItemClick(code) }
+    private val adapter = CategoryListAdapter { code, adapterPosition -> onItemClick(code, adapterPosition) }
+    private var isCategoryClickEnabled = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -130,21 +131,31 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
         binding.vDim.visibility = View.GONE
     }
 
+    override fun enableCategoryClick() {
+        isCategoryClickEnabled = true
+    }
+
+    override fun disableCategoryClick() {
+        isCategoryClickEnabled = false
+    }
+
     private fun configMap() {
-        //naverMap.minZoom = 15.0
-        naverMap.maxZoom = 17.0
         naverMap.uiSettings.isLocationButtonEnabled = true
-//        naverMap.uiSettings.isTiltGesturesEnabled = false
         naverMap.extent = LatLngBounds(LatLng(31.43, 122.37), LatLng(44.35, 132.0))
     }
 
-    private fun onItemClick(code: String) {
-        Log.d("code", code)
-        mainMapPresenter.searchByCategory(
-            code, naverMap.cameraPosition.target, naverMap.projection.fromScreenLocation(
-                PointF(0F, 0F)
+    private fun onItemClick(code: String, adapterPosition: Int) {
+        if (isCategoryClickEnabled) {
+            Log.d("code", code)
+            val prevPosition = adapter.selectedPosition
+            adapter.selectedPosition = adapterPosition
+            adapter.notifyItemChanged(prevPosition)
+            adapter.notifyItemChanged(adapter.selectedPosition)
+            mainMapPresenter.searchByCategory(
+                code, naverMap.cameraPosition.target, naverMap.projection.fromScreenLocation(
+                    PointF(0F, 0F)
+                )
             )
-        )
+        }
     }
-
 }
