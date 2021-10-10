@@ -10,6 +10,8 @@ interface MainMapContract {
         fun deleteMarker(marker: Marker)
         fun displayMarker(marker: Marker)
         fun attachInfoWindow(marker: Marker, caption: String)
+        fun showProgressIndicator()
+        fun hideProgressIndicator()
     }
     interface  MainMapPresenter {
         fun onMapClick(pointf: PointF, latLng: LatLng)

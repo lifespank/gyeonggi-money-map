@@ -124,6 +124,14 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
         infoWindow.open(marker)
     }
 
+    override fun showProgressIndicator() {
+        binding.piCircular.visibility = View.VISIBLE
+    }
+
+    override fun hideProgressIndicator() {
+        binding.piCircular.visibility = View.GONE
+    }
+
     private fun configMap() {
         //naverMap.minZoom = 15.0
         naverMap.maxZoom = 17.0
