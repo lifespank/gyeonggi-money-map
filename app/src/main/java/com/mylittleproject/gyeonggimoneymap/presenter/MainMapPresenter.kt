@@ -43,6 +43,7 @@ class MainMapPresenter(
         val radius = min(cameraCoord.distanceTo(leftUpperCoord).roundToInt(), 500)
         var searchList: List<Document>?
         mainMapView.showProgressIndicator()
+        mainMapView.dimMap()
         lifecycle.coroutineScope.launch {
             searchList = categorySearchHelper.searchByCategory(code, x, y, radius)
             Log.d("searchList", searchList.toString())
@@ -56,6 +57,7 @@ class MainMapPresenter(
                     marker
                 })
             }
+            mainMapView.unDimMap()
             mainMapView.hideProgressIndicator()
         }
     }

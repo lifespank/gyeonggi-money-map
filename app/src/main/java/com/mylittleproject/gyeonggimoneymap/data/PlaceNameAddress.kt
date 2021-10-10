@@ -1,13 +1,20 @@
 package com.mylittleproject.gyeonggimoneymap.data
 
+import android.util.Log
+
 class PlaceNameAddress(beforeName: String, roadAddress: String) {
     val name = refineName(beforeName)
     val siGun = roadAddress.substringAfter("경기 ").substringBefore(" ")
     val lastPartOfAddress = getRoadAddressAndBuildingNumber(roadAddress)
 
     private fun getRoadAddressAndBuildingNumber(roadAddress: String): String {
-        val roadAddressSplit = roadAddress.split(" ")
-        return roadAddressSplit[roadAddressSplit.lastIndex - 1] + " " + roadAddressSplit[roadAddressSplit.lastIndex]
+        return try {
+            val roadAddressSplit = roadAddress.split(" ")
+            roadAddressSplit[roadAddressSplit.lastIndex - 1] + " " + roadAddressSplit[roadAddressSplit.lastIndex]
+        } catch (e: Exception) {
+            Log.e("parse error", e.message.toString() + "\n" + roadAddress)
+            ""
+        }
     }
 
     private fun refineName(beforeName: String): String {

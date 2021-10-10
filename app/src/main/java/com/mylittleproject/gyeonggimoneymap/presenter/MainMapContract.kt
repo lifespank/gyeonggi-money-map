@@ -12,6 +12,8 @@ interface MainMapContract {
         fun attachInfoWindow(marker: Marker, caption: String)
         fun showProgressIndicator()
         fun hideProgressIndicator()
+        fun dimMap()
+        fun unDimMap()
     }
     interface  MainMapPresenter {
         fun onMapClick(pointf: PointF, latLng: LatLng)

@@ -32,7 +32,7 @@ object CategorySearchHelper {
         radius: Int,
         page: Int = 1,
         sort: String = "distance"
-    ): List<Document>? {
+    ): List<Document> {
         var documentList: MutableList<Document>? = null
         val searchResponse =
             apiServiceKakao.searchByCategory(categoryGroupCode, x, y, radius, page, sort)
@@ -68,32 +68,38 @@ object CategorySearchHelper {
             Log.e("kakao error", "First Response Error")
         }
 
-        val filteredDocumentList =
-            documentList?.filter {
-                var isGood = false
-                val placeNameAddress = PlaceNameAddress(it.placeName, it.roadAddressName)
-                val gyeonggiResponse =
-                    apiServiceGyeonggi.searchGyeonggiMoneyPlace(
-                        GYEONGGI_KEY,
-                        "json",
-                        "1",
-                        "1",
-                        placeNameAddress.name,
-                        placeNameAddress.siGun,
-                        placeNameAddress.lastPartOfAddress
-                    )
-                if (gyeonggiResponse.isSuccessful) {
-                    val data = gyeonggiResponse.body()
-                    if (data != null
-                        && data.regionMnyFacltStus.isNotEmpty()
-                        && data.regionMnyFacltStus[0].head[1].result.code == GYEONGGI_RESPONSE_CODE_VALID
-                    ) {
-                        Log.d("gyeonggiResponse", gyeonggiResponse.toString())
-                        isGood = true
+        Log.d("documents", documentList.toString())
+        if (!documentList.isNullOrEmpty()) {
+            val filteredDocumentList =
+                documentList.filter {
+                    var isGood = false
+                    if (it.addressName.substringBefore(" ") == "경기") {
+                        val placeNameAddress = PlaceNameAddress(it.placeName, it.roadAddressName)
+                        val gyeonggiResponse =
+                            apiServiceGyeonggi.searchGyeonggiMoneyPlace(
+                                GYEONGGI_KEY,
+                                "json",
+                                "1",
+                                "1",
+                                placeNameAddress.name,
+                                placeNameAddress.siGun,
+                                placeNameAddress.lastPartOfAddress
+                            )
+                        if (gyeonggiResponse.isSuccessful) {
+                            val data = gyeonggiResponse.body()
+                            if (data != null
+                                && data.regionMnyFacltStus.isNotEmpty()
+                                && data.regionMnyFacltStus[0].head[1].result.code == GYEONGGI_RESPONSE_CODE_VALID
+                            ) {
+                                Log.d("gyeonggiResponse", gyeonggiResponse.toString())
+                                isGood = true
+                            }
+                        }
                     }
+                    isGood
                 }
-                isGood
-            }
-        return filteredDocumentList
+            return filteredDocumentList
+        }
+        return emptyList()
     }
 }

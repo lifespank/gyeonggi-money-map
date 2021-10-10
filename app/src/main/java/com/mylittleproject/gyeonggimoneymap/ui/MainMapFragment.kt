@@ -132,6 +132,14 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
         binding.piCircular.visibility = View.GONE
     }
 
+    override fun dimMap() {
+        binding.vDim.visibility = View.VISIBLE
+    }
+
+    override fun unDimMap() {
+        binding.vDim.visibility = View.GONE
+    }
+
     private fun configMap() {
         //naverMap.minZoom = 15.0
         naverMap.maxZoom = 17.0
@@ -148,4 +156,5 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
             )
         )
     }
+
 }
