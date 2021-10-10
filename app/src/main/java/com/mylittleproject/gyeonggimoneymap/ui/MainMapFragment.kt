@@ -1,17 +1,19 @@
 package com.mylittleproject.gyeonggimoneymap.ui
 
+import android.graphics.PointF
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.mylittleproject.gyeonggimoneymap.R
 import com.mylittleproject.gyeonggimoneymap.common.LOCATION_PERMISSION_REQUEST_CODE
 import com.mylittleproject.gyeonggimoneymap.data.StoreCategory
 import com.mylittleproject.gyeonggimoneymap.databinding.FragmentMapBinding
+import com.mylittleproject.gyeonggimoneymap.network.CategorySearchHelper
 import com.mylittleproject.gyeonggimoneymap.presenter.MainMapContract
 import com.mylittleproject.gyeonggimoneymap.presenter.MainMapPresenter
 import com.naver.maps.geometry.LatLng
@@ -29,8 +31,6 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
     private val binding get() = _binding!!
     private lateinit var naverMap: NaverMap
     private lateinit var locationSource: FusedLocationSource
-    private val markerList = mutableListOf<Marker>()
-    private var symbolMarker: Marker? = null
     private lateinit var mainMapPresenter: MainMapContract.MainMapPresenter
     private lateinit var catetoryRecyclerView: RecyclerView
     private val adapter = CategoryListAdapter { code -> onItemClick(code) }
@@ -52,7 +52,7 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mainMapPresenter = MainMapPresenter(this)
+        mainMapPresenter = MainMapPresenter(this, CategorySearchHelper, lifecycle)
         val fm = childFragmentManager
         val mapFragment = fm.findFragmentById(R.id.map_fragment) as MapFragment?
             ?: MapFragment.newInstance().also {
@@ -62,6 +62,7 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
         catetoryRecyclerView = binding.rvCategory
         catetoryRecyclerView.adapter = adapter
         adapter.submitList(StoreCategory.toList())
+        lifecycleScope
     }
 
     override fun onDestroyView() {
@@ -134,5 +135,10 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
 
     private fun onItemClick(code: String) {
         Log.d("code", code)
+        mainMapPresenter.searchByCategory(
+            code, naverMap.cameraPosition.target, naverMap.projection.fromScreenLocation(
+                PointF(0F, 0F)
+            )
+        )
     }
 }

@@ -14,5 +14,6 @@ interface MainMapContract {
     interface  MainMapPresenter {
         fun onMapClick(pointf: PointF, latLng: LatLng)
         fun onSymbolClick(symbol: Symbol)
+        fun searchByCategory(code: String, cameraCoord: LatLng, leftUpperCoord: LatLng)
     }
 }
