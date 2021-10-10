@@ -6,6 +6,11 @@ import com.mylittleproject.gyeonggimoneymap.common.GYEONGGI_RESPONSE_CODE_VALID
 import com.mylittleproject.gyeonggimoneymap.common.GYEONGGI_URL
 import com.mylittleproject.gyeonggimoneymap.common.KAKAO_CATEGORY_SEARCH_URL
 import com.mylittleproject.gyeonggimoneymap.data.PlaceNameAddress
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -70,34 +75,40 @@ object CategorySearchHelper {
 
         Log.d("documents", documentList.toString())
         if (!documentList.isNullOrEmpty()) {
-            val filteredDocumentList =
-                documentList.filter {
-                    var isGood = false
-                    if (it.addressName.substringBefore(" ") == "경기" && it.roadAddressName.isNotEmpty()) {
-                        val placeNameAddress = PlaceNameAddress(it.placeName, it.roadAddressName)
-                        val gyeonggiResponse =
-                            apiServiceGyeonggi.searchGyeonggiMoneyPlace(
-                                GYEONGGI_KEY,
-                                "json",
-                                "1",
-                                "1",
-                                placeNameAddress.name,
-                                placeNameAddress.siGun,
-                                placeNameAddress.lastPartOfAddress
-                            )
-                        if (gyeonggiResponse.isSuccessful) {
-                            val data = gyeonggiResponse.body()
-                            if (data != null
-                                && data.regionMnyFacltStus.isNotEmpty()
-                                && data.regionMnyFacltStus[0].head[1].result.code == GYEONGGI_RESPONSE_CODE_VALID
-                            ) {
-                                Log.d("gyeonggiResponse", gyeonggiResponse.toString())
-                                isGood = true
+            val filteredDocumentList = mutableListOf<Document>()
+            coroutineScope {
+                documentList.map {
+                    async {
+                        if (it.addressName.substringBefore(" ") == "경기" && it.roadAddressName.isNotEmpty()) {
+                            val placeNameAddress =
+                                PlaceNameAddress(it.placeName, it.roadAddressName)
+                            val gyeonggiResponse =
+                                apiServiceGyeonggi.searchGyeonggiMoneyPlace(
+                                    GYEONGGI_KEY,
+                                    "json",
+                                    "1",
+                                    "1",
+                                    placeNameAddress.name,
+                                    placeNameAddress.siGun,
+                                    placeNameAddress.lastPartOfAddress
+                                )
+                            if (gyeonggiResponse.isSuccessful) {
+                                val data = gyeonggiResponse.body()
+                                if (data != null
+                                    && data.regionMnyFacltStus.isNotEmpty()
+                                    && data.regionMnyFacltStus[0].head[1].result.code == GYEONGGI_RESPONSE_CODE_VALID
+                                ) {
+                                    val mutex = Mutex()
+                                    mutex.withLock {
+                                        filteredDocumentList.add(it)
+                                    }
+                                    Log.d("gyeonggiResponse", gyeonggiResponse.toString())
+                                }
                             }
                         }
                     }
-                    isGood
-                }
+                }.awaitAll()
+            }
             return filteredDocumentList
         }
         return emptyList()
