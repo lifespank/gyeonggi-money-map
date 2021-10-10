@@ -206,4 +206,6 @@ fabric.properties
 
 !/gradle/wrapper/gradle-wrapper.jar
 
+app/src/main/java/com/mylittleproject/gyeonggimoneymap/common/Keys.kt
+
 # End of https://www.toptal.com/developers/gitignore/api/androidstudio,kotlin,android
