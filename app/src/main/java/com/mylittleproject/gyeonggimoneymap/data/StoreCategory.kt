@@ -2,7 +2,11 @@ package com.mylittleproject.gyeonggimoneymap.data
 
 import com.mylittleproject.gyeonggimoneymap.R
 
-enum class StoreCategory(val code: String, val korean: String, val drawable: Int) {
+enum class StoreCategory(
+    val code: String,
+    val korean: String,
+    val drawable: Int,
+) {
     CONVENIENCE_STORE("CS2", "편의점", R.drawable.ic_baseline_local_convenience_store_24),
     PRESCHOOL("PS3", "어린이집/유치원", R.drawable.ic_baseline_child_care_24),
     ACADEMY("AC5", "학원", R.drawable.ic_baseline_school_24),

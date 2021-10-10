@@ -7,7 +7,7 @@ class PlaceNameAddress(beforeName: String, roadAddress: String) {
 
     private fun getRoadAddressAndBuildingNumber(roadAddress: String): String {
         val roadAddressSplit = roadAddress.split(" ")
-        return roadAddressSplit[roadAddressSplit.size - 2] + " " + roadAddressSplit[roadAddressSplit.size - 1]
+        return roadAddressSplit[roadAddressSplit.lastIndex - 1] + " " + roadAddressSplit[roadAddressSplit.lastIndex]
     }
 
     private fun refineName(beforeName: String): String {
