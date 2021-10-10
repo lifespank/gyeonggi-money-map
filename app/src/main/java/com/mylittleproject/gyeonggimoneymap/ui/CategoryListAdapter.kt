@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mylittleproject.gyeonggimoneymap.data.StoreCategory
 import com.mylittleproject.gyeonggimoneymap.databinding.RecyclerViewItemCategoryBinding
 
-class CategoryListAdapter :
+class CategoryListAdapter(private val onItemClick: (String) -> Unit) :
     ListAdapter<StoreCategory, CategoryListAdapter.CategoryViewHolder>(object :
         DiffUtil.ItemCallback<StoreCategory>() {
         override fun areItemsTheSame(oldItem: StoreCategory, newItem: StoreCategory): Boolean {
@@ -33,9 +33,17 @@ class CategoryListAdapter :
         holder.bind(getItem(position))
     }
 
-    class CategoryViewHolder(private val binding: RecyclerViewItemCategoryBinding) :
+    inner class CategoryViewHolder(private val binding: RecyclerViewItemCategoryBinding) :
         RecyclerView.ViewHolder(binding.root) {
+        private lateinit var code: String
+        init {
+            itemView.setOnClickListener {
+                onItemClick(code)
+            }
+        }
+
         fun bind(storeCategory: StoreCategory) {
+            code = storeCategory.code
             binding.tvCategoryKorean.text = storeCategory.korean
             binding.ivCategoryIcon.setImageResource(storeCategory.drawable)
         }

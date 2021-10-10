@@ -33,7 +33,7 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
     private var symbolMarker: Marker? = null
     private lateinit var mainMapPresenter: MainMapContract.MainMapPresenter
     private lateinit var catetoryRecyclerView: RecyclerView
-    private val adapter = CategoryListAdapter()
+    private val adapter = CategoryListAdapter { code -> onItemClick(code) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -130,5 +130,9 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
         naverMap.uiSettings.isLocationButtonEnabled = true
         naverMap.uiSettings.isTiltGesturesEnabled = false
         naverMap.extent = LatLngBounds(LatLng(31.43, 122.37), LatLng(44.35, 132.0))
+    }
+
+    private fun onItemClick(code: String) {
+        Log.d("code", code)
     }
 }

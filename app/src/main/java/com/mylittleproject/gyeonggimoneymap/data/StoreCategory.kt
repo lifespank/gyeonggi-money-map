@@ -9,7 +9,7 @@ enum class StoreCategory(val code: String, val korean: String, val drawable: Int
     PARKING_LOT("PK6", "주차장", R.drawable.ic_baseline_local_parking_24),
     GAS_STATION("OL7", "주유소", R.drawable.ic_baseline_local_gas_station_24),
     REAL_ESTATE("AG2", "중개업소", R.drawable.ic_baseline_house_24),
-    ACCOMODATION("AD5", "숙박", R.drawable.ic_baseline_bed_24),
+    ACCOMMODATION("AD5", "숙박", R.drawable.ic_baseline_bed_24),
     RESTAURANT("FD6", "음식점", R.drawable.ic_baseline_restaurant_24),
     CAFE("CE7", "카페", R.drawable.ic_baseline_local_cafe_24),
     HOSPITAL("HP8", "병원", R.drawable.ic_baseline_local_hospital_24),
@@ -19,16 +19,16 @@ enum class StoreCategory(val code: String, val korean: String, val drawable: Int
         fun toList(): List<StoreCategory> {
             return listOf(
                 CONVENIENCE_STORE,
-                PRESCHOOL,
-                ACADEMY,
-                PARKING_LOT,
-                GAS_STATION,
-                REAL_ESTATE,
-                ACCOMODATION,
                 RESTAURANT,
                 CAFE,
+                PARKING_LOT,
+                GAS_STATION,
                 HOSPITAL,
-                PHARMACY
+                PHARMACY,
+                ACCOMMODATION,
+                PRESCHOOL,
+                ACADEMY,
+                REAL_ESTATE,
             )
         }
     }
