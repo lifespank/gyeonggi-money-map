@@ -34,7 +34,11 @@ data class Document(
     val x: String = "",
     @SerializedName("y")
     val y: String = ""
-)
+) {
+    override fun toString(): String {
+        return listOf(placeName, phone, roadAddressName).joinToString("\n")
+    }
+}
 
 data class Meta(
     @SerializedName("is_end")

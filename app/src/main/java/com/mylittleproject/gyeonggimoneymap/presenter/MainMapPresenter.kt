@@ -10,7 +10,6 @@ import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.Symbol
 import com.naver.maps.map.overlay.Marker
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -52,6 +51,7 @@ class MainMapPresenter(
                 markerList.addAll(it.map { document ->
                     val marker = Marker(LatLng(document.y.toDouble(), document.x.toDouble()))
                     mainMapView.displayMarker(marker)
+                    mainMapView.attachInfoWindow(marker, document.toString())
                     marker
                 })
             }
