@@ -79,7 +79,7 @@ object CategorySearchHelper {
             coroutineScope {
                 documentList.map {
                     async {
-                        if (it.addressName.substringBefore(" ") == "경기" && it.roadAddressName.isNotEmpty()) {
+                        if (it.roadAddressName.isNotEmpty() && it.roadAddressName.substringBefore(" ") == "경기") {
                             val placeNameAddress =
                                 PlaceNameAddress(it.placeName, it.roadAddressName)
                             val gyeonggiResponse =
