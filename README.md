@@ -2,5 +2,5 @@
 경기지역화폐 가맹점 표시 지도 앱
 
 
-https://user-images.githubusercontent.com/59498397/136701788-e8a356de-772e-44c7-aa87-df58207f9ba3.mp4
+https://user-images.githubusercontent.com/59498397/136903463-6531410b-5884-4aa0-93cd-41cbeb3fbb70.mp4
 
