@@ -1,54 +1,60 @@
 package com.mylittleproject.gyeonggimoneymap.network
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.JsonClass
+import com.squareup.moshi.Json
 
+@JsonClass(generateAdapter = true)
 data class GyeonggiSearchResponse(
-    @SerializedName("RegionMnyFacltStus")
+    @Json(name = "RegionMnyFacltStus")
     val regionMnyFacltStus: List<RegionMnyFacltStu> = listOf()
 )
 
+@JsonClass(generateAdapter = true)
 data class RegionMnyFacltStu(
-    @SerializedName("head")
+    @Json(name = "head")
     val head: List<Head> = listOf(),
-    @SerializedName("row")
+    @Json(name = "row")
     val row: List<Row> = listOf()
 )
 
+@JsonClass(generateAdapter = true)
 data class Head(
-    @SerializedName("list_total_count")
+    @Json(name = "list_total_count")
     val listTotalCount: Int = 0,
-    @SerializedName("RESULT")
+    @Json(name = "RESULT")
     val result: RESULT = RESULT(),
-    @SerializedName("api_version")
+    @Json(name = "api_version")
     val apiVersion: String = ""
 )
 
+@JsonClass(generateAdapter = true)
 data class Row(
-    @SerializedName("CMPNM_NM")
+    @Json(name = "CMPNM_NM")
     val companyName: String = "",
-    @SerializedName("INDUTYPE_NM")
+    @Json(name = "INDUTYPE_NM")
     val companyType: String = "",
-    @SerializedName("DATA_STD_DE")
+    @Json(name = "DATA_STD_DE")
     val dataDate: String = "",
-    @SerializedName("REFINE_LOTNO_ADDR")
+    @Json(name = "REFINE_LOTNO_ADDR")
     val lotNumberAddress: String = "",
-    @SerializedName("REFINE_ROADNM_ADDR")
+    @Json(name = "REFINE_ROADNM_ADDR")
     val roadNumberAddress: String = "",
-    @SerializedName("REFINE_ZIP_CD")
+    @Json(name = "REFINE_ZIP_CD")
     val zipCode: String? = null,
-    @SerializedName("REFINE_WGS84_LOGT")
+    @Json(name = "REFINE_WGS84_LOGT")
     val longitude: String? = null,
-    @SerializedName("REFINE_WGS84_LAT")
+    @Json(name = "REFINE_WGS84_LAT")
     val latitude: String? = null,
-    @SerializedName("SIGUN_CD")
+    @Json(name = "SIGUN_CD")
     val siGunCode: String = "",
-    @SerializedName("SIGUN_NM")
+    @Json(name = "SIGUN_NM")
     val siGunName: String = ""
 )
 
+@JsonClass(generateAdapter = true)
 data class RESULT(
-    @SerializedName("CODE")
+    @Json(name = "CODE")
     val code: String = "",
-    @SerializedName("MESSAGE")
+    @Json(name = "MESSAGE")
     val message: String = ""
 )

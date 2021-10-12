@@ -1,38 +1,41 @@
 package com.mylittleproject.gyeonggimoneymap.network
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.JsonClass
+import com.squareup.moshi.Json
 
+@JsonClass(generateAdapter = true)
 data class KakaoSearchResponse(
-    @SerializedName("documents")
+    @Json(name = "documents")
     val documents: List<Document> = listOf(),
-    @SerializedName("meta")
+    @Json(name = "meta")
     val meta: Meta = Meta()
 )
 
+@JsonClass(generateAdapter = true)
 data class Document(
-    @SerializedName("address_name")
+    @Json(name = "address_name")
     val addressName: String = "",
-    @SerializedName("category_group_code")
+    @Json(name = "category_group_code")
     val categoryGroupCode: String = "",
-    @SerializedName("category_group_name")
+    @Json(name = "category_group_name")
     val categoryGroupName: String = "",
-    @SerializedName("category_name")
+    @Json(name = "category_name")
     val categoryName: String = "",
-    @SerializedName("distance")
+    @Json(name = "distance")
     val distance: String = "",
-    @SerializedName("id")
+    @Json(name = "id")
     val id: String = "",
-    @SerializedName("phone")
+    @Json(name = "phone")
     val phone: String = "",
-    @SerializedName("place_name")
+    @Json(name = "place_name")
     val placeName: String = "",
-    @SerializedName("place_url")
+    @Json(name = "place_url")
     val placeUrl: String = "",
-    @SerializedName("road_address_name")
+    @Json(name = "road_address_name")
     val roadAddressName: String = "",
-    @SerializedName("x")
+    @Json(name = "x")
     val x: String = "",
-    @SerializedName("y")
+    @Json(name = "y")
     val y: String = ""
 ) {
     override fun toString(): String {
@@ -40,13 +43,14 @@ data class Document(
     }
 }
 
+@JsonClass(generateAdapter = true)
 data class Meta(
-    @SerializedName("is_end")
+    @Json(name = "is_end")
     val isEnd: Boolean = false,
-    @SerializedName("pageable_count")
+    @Json(name = "pageable_count")
     val pageableCount: Int = 0,
-    @SerializedName("same_name")
+    @Json(name = "same_name")
     val sameName: Any? = null,
-    @SerializedName("total_count")
+    @Json(name = "total_count")
     val totalCount: Int = 0
 )

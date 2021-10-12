@@ -12,21 +12,21 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.moshi.MoshiConverterFactory
 
 object CategorySearchHelper {
     private val retrofitKakao by lazy {
         Retrofit
             .Builder()
             .baseUrl(KAKAO_CATEGORY_SEARCH_URL)
-            .addConverterFactory(GsonConverterFactory.create()).build()
+            .addConverterFactory(MoshiConverterFactory.create()).build()
     }
     private val apiServiceKakao by lazy { retrofitKakao.create(APIService::class.java) }
     private val retrofitGyeonggi by lazy {
         Retrofit
             .Builder()
             .baseUrl(GYEONGGI_URL)
-            .addConverterFactory(GsonConverterFactory.create()).build()
+            .addConverterFactory(MoshiConverterFactory.create()).build()
     }
     private val apiServiceGyeonggi by lazy { retrofitGyeonggi.create(APIService::class.java) }
 
