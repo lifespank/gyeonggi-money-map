@@ -44,6 +44,7 @@ class MainMapPresenter(
                     val marker = Marker(LatLng(document.y.toDouble(), document.x.toDouble()))
                     marker.isIconPerspectiveEnabled = true
                     marker.captionText = document.placeName
+                    marker.isHideCollidedSymbols = true
                     mainMapView.displayMarker(marker)
                     marker.setOnClickListener { overlay ->
                         onMarkerClick(overlay as Marker, document.toString())
