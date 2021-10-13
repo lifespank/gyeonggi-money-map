@@ -11,4 +11,5 @@
     <color name="default_text_color">#616161</color>
     <color name="light_green">#BEFFC0</color>
     <color name="transparent_black">#88000000</color>
+    <color name="blue">#3671FF</color>
 </resources>

@@ -4,6 +4,8 @@ import android.graphics.PointF
 import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.coroutineScope
+import com.mylittleproject.gyeonggimoneymap.common.KAKAO_SCHEME
+import com.mylittleproject.gyeonggimoneymap.data.InfoWindowData
 import com.mylittleproject.gyeonggimoneymap.network.CategorySearchHelper
 import com.mylittleproject.gyeonggimoneymap.network.Document
 import com.naver.maps.geometry.LatLng
@@ -47,7 +49,15 @@ class MainMapPresenter(
                     marker.isHideCollidedSymbols = true
                     mainMapView.displayMarker(marker)
                     marker.setOnClickListener { overlay ->
-                        onMarkerClick(overlay as Marker, document.toString())
+                        onMarkerClick(
+                            overlay as Marker,
+                            InfoWindowData(
+                                document.placeName,
+                                document.phone,
+                                document.roadAddressName,
+                                KAKAO_SCHEME + document.placeUrl.substringAfterLast("/")
+                            )
+                        )
                         true
                     }
                     marker
@@ -59,13 +69,13 @@ class MainMapPresenter(
         }
     }
 
-    private fun onMarkerClick(marker: Marker, infoString: String) {
+    private fun onMarkerClick(marker: Marker, infoWindowData: InfoWindowData) {
         markerList.forEach { otherMarker ->
             otherMarker.zIndex = 0
         }
         marker.zIndex = 1
         if (marker.infoWindow == null) {
-            mainMapView.attachInfoWindow(infoWindow, marker, infoString)
+            mainMapView.attachInfoWindow(infoWindow, marker, infoWindowData)
         } else {
             infoWindow.close()
         }

@@ -1,18 +1,24 @@
 package com.mylittleproject.gyeonggimoneymap.ui
 
+import android.content.Intent
 import android.graphics.PointF
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.mylittleproject.gyeonggimoneymap.R
+import com.mylittleproject.gyeonggimoneymap.common.KAKAO_MAP_PLAYSTORE
 import com.mylittleproject.gyeonggimoneymap.common.LOCATION_PERMISSION_REQUEST_CODE
+import com.mylittleproject.gyeonggimoneymap.data.InfoWindowData
 import com.mylittleproject.gyeonggimoneymap.data.StoreCategory
 import com.mylittleproject.gyeonggimoneymap.databinding.FragmentMapBinding
+import com.mylittleproject.gyeonggimoneymap.databinding.InfoWindowViewBinding
 import com.mylittleproject.gyeonggimoneymap.network.CategorySearchHelper
 import com.mylittleproject.gyeonggimoneymap.presenter.MainMapContract
 import com.mylittleproject.gyeonggimoneymap.presenter.MainMapPresenter
@@ -33,7 +39,8 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
     private lateinit var locationSource: FusedLocationSource
     private lateinit var mainMapPresenter: MainMapContract.MainMapPresenter
     private lateinit var catetoryRecyclerView: RecyclerView
-    private val adapter = CategoryListAdapter { code, adapterPosition -> onItemClick(code, adapterPosition) }
+    private val adapter =
+        CategoryListAdapter { code, adapterPosition -> onItemClick(code, adapterPosition) }
     private var isCategoryClickEnabled = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -106,11 +113,34 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
         marker.map = naverMap
     }
 
-    override fun attachInfoWindow(infoWindow: InfoWindow, marker: Marker, caption: String) {
-        infoWindow.adapter = object : InfoWindow.DefaultTextAdapter(requireContext()) {
-            override fun getText(infoWindow: InfoWindow): CharSequence {
-                return caption
+    override fun attachInfoWindow(
+        infoWindow: InfoWindow,
+        marker: Marker,
+        infoWindowData: InfoWindowData
+    ) {
+        val binding: InfoWindowViewBinding = InfoWindowViewBinding.inflate(layoutInflater)
+        infoWindow.adapter = object : InfoWindow.DefaultViewAdapter(requireContext()) {
+            override fun getContentView(infoWindow: InfoWindow): View {
+                binding.tvAddress.text = infoWindowData.address
+                binding.tvTitle.text = infoWindowData.name
+                if (infoWindowData.phone.isNotEmpty()) {
+                    binding.tvPhone.text = infoWindowData.phone
+                } else {
+                    binding.tvPhone.isVisible = false
+                }
+                return binding.root
             }
+        }
+        infoWindow.setOnClickListener {
+            try {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(infoWindowData.url))
+                startActivity(intent)
+            } catch(e: Exception) {
+                Log.e("error", "No kakakoMap")
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(KAKAO_MAP_PLAYSTORE))
+                startActivity(intent)
+            }
+            true
         }
         infoWindow.open(marker)
     }
