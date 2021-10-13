@@ -14,21 +14,19 @@ import kotlinx.coroutines.sync.withLock
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
-object CategorySearchHelper {
-    private val retrofitKakao by lazy {
+class CategorySearchHelper {
+    private val retrofitKakao =
         Retrofit
             .Builder()
             .baseUrl(KAKAO_CATEGORY_SEARCH_URL)
             .addConverterFactory(MoshiConverterFactory.create()).build()
-    }
-    private val apiServiceKakao by lazy { retrofitKakao.create(APIService::class.java) }
-    private val retrofitGyeonggi by lazy {
+    private val apiServiceKakao = retrofitKakao.create(APIService::class.java)
+    private val retrofitGyeonggi =
         Retrofit
             .Builder()
             .baseUrl(GYEONGGI_URL)
             .addConverterFactory(MoshiConverterFactory.create()).build()
-    }
-    private val apiServiceGyeonggi by lazy { retrofitGyeonggi.create(APIService::class.java) }
+    private val apiServiceGyeonggi = retrofitGyeonggi.create(APIService::class.java)
 
     suspend fun searchByCategory(
         categoryGroupCode: String,

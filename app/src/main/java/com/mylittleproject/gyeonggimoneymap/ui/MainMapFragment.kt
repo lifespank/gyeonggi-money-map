@@ -52,7 +52,7 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mainMapPresenter = MainMapPresenter(this, CategorySearchHelper, lifecycle)
+        mainMapPresenter = MainMapPresenter(this, CategorySearchHelper(), lifecycle)
         val fm = childFragmentManager
         val mapFragment = fm.findFragmentById(R.id.map_fragment) as MapFragment?
             ?: MapFragment.newInstance().also {
