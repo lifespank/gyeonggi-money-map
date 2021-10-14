@@ -12,18 +12,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
 class CategorySearchHelper {
-    private val retrofitKakao =
-        Retrofit
-            .Builder()
-            .baseUrl(KAKAO_CATEGORY_SEARCH_URL)
-            .addConverterFactory(MoshiConverterFactory.create()).build()
-    private val apiServiceKakao = retrofitKakao.create(APIService::class.java)
-    private val retrofitGyeonggi =
-        Retrofit
-            .Builder()
-            .baseUrl(GYEONGGI_URL)
-            .addConverterFactory(MoshiConverterFactory.create()).build()
-    private val apiServiceGyeonggi = retrofitGyeonggi.create(APIService::class.java)
+
+    private val apiServiceKakao = getService(KAKAO_CATEGORY_SEARCH_URL)
+    private val apiServiceGyeonggi = getService(GYEONGGI_URL)
 
     suspend fun searchByCategory(
         categoryGroupCode: String,
@@ -107,6 +98,14 @@ class CategorySearchHelper {
             return filteredDocumentList
         }
         return emptyList()
+    }
+
+    private fun getService(baseURL: String): APIService {
+        val retrofit = Retrofit
+            .Builder()
+            .baseUrl(baseURL)
+            .addConverterFactory(MoshiConverterFactory.create()).build()
+        return retrofit.create(APIService::class.java)
     }
 
     companion object {
