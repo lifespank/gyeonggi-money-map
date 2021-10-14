@@ -2,9 +2,6 @@ package com.mylittleproject.gyeonggimoneymap.network
 
 import android.util.Log
 import com.mylittleproject.gyeonggimoneymap.common.GYEONGGI_KEY
-import com.mylittleproject.gyeonggimoneymap.common.GYEONGGI_RESPONSE_CODE_VALID
-import com.mylittleproject.gyeonggimoneymap.common.GYEONGGI_URL
-import com.mylittleproject.gyeonggimoneymap.common.KAKAO_CATEGORY_SEARCH_URL
 import com.mylittleproject.gyeonggimoneymap.data.PlaceNameAddress
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -110,5 +107,11 @@ class CategorySearchHelper {
             return filteredDocumentList
         }
         return emptyList()
+    }
+
+    companion object {
+        const val KAKAO_CATEGORY_SEARCH_URL = "https://dapi.kakao.com/"
+        const val GYEONGGI_RESPONSE_CODE_VALID = "INFO-000"
+        const val GYEONGGI_URL = "https://openapi.gg.go.kr/"
     }
 }

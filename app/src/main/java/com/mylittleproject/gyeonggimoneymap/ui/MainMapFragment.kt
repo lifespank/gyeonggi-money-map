@@ -13,8 +13,6 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.mylittleproject.gyeonggimoneymap.R
-import com.mylittleproject.gyeonggimoneymap.common.KAKAO_MAP_PLAYSTORE
-import com.mylittleproject.gyeonggimoneymap.common.LOCATION_PERMISSION_REQUEST_CODE
 import com.mylittleproject.gyeonggimoneymap.data.InfoWindowData
 import com.mylittleproject.gyeonggimoneymap.data.StoreCategory
 import com.mylittleproject.gyeonggimoneymap.databinding.FragmentMapBinding
@@ -135,7 +133,7 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
             try {
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(infoWindowData.url))
                 startActivity(intent)
-            } catch(e: Exception) {
+            } catch (e: Exception) {
                 Log.e("error", "No kakakoMap")
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(KAKAO_MAP_PLAYSTORE))
                 startActivity(intent)
@@ -187,5 +185,10 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
                 )
             )
         }
+    }
+
+    companion object {
+        const val LOCATION_PERMISSION_REQUEST_CODE = 1000
+        const val KAKAO_MAP_PLAYSTORE = "market://details?id=net.daum.android.map"
     }
 }

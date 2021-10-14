@@ -4,7 +4,6 @@ import android.graphics.PointF
 import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.coroutineScope
-import com.mylittleproject.gyeonggimoneymap.common.KAKAO_SCHEME
 import com.mylittleproject.gyeonggimoneymap.data.InfoWindowData
 import com.mylittleproject.gyeonggimoneymap.network.CategorySearchHelper
 import com.mylittleproject.gyeonggimoneymap.network.Document
@@ -86,4 +85,7 @@ class MainMapPresenter(
         markerList.clear()
     }
 
+    companion object {
+        const val KAKAO_SCHEME = "kakaomap://place?id="
+    }
 }
