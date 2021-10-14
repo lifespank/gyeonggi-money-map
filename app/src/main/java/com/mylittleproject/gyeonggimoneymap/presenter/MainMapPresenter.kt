@@ -54,6 +54,7 @@ class MainMapPresenter(
                                 document.placeName,
                                 document.phone,
                                 document.roadAddressName,
+                                document.addressName,
                                 KAKAO_SCHEME + document.placeUrl.substringAfterLast("/")
                             )
                         )

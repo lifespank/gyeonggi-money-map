@@ -119,7 +119,11 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
         val binding: InfoWindowViewBinding = InfoWindowViewBinding.inflate(layoutInflater)
         infoWindow.adapter = object : InfoWindow.DefaultViewAdapter(requireContext()) {
             override fun getContentView(infoWindow: InfoWindow): View {
-                binding.tvAddress.text = infoWindowData.address
+                if (infoWindowData.roadAddress.isNotEmpty()) {
+                    binding.tvAddress.text = infoWindowData.roadAddress
+                } else {
+                    binding.tvAddress.text = infoWindowData.lotNameAddress
+                }
                 binding.tvTitle.text = infoWindowData.name
                 if (infoWindowData.phone.isNotEmpty()) {
                     binding.tvPhone.text = infoWindowData.phone
