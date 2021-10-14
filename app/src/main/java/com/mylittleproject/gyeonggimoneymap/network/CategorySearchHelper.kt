@@ -74,6 +74,7 @@ class CategorySearchHelper {
         Log.d("documents", documentList.toString())
         if (!documentList.isNullOrEmpty()) {
             val filteredDocumentList = mutableListOf<Document>()
+            val mutex = Mutex()
             coroutineScope {
                 documentList.map {
                     async {
@@ -96,7 +97,6 @@ class CategorySearchHelper {
                                     && data.regionMnyFacltStus.isNotEmpty()
                                     && data.regionMnyFacltStus[0].head[1].result.code == GYEONGGI_RESPONSE_CODE_VALID
                                 ) {
-                                    val mutex = Mutex()
                                     mutex.withLock {
                                         filteredDocumentList.add(it)
                                     }
