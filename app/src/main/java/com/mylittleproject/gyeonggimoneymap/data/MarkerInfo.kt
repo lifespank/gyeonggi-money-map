@@ -1,5 +1,9 @@
 package com.mylittleproject.gyeonggimoneymap.data
 
+import com.naver.maps.map.overlay.Marker
+
+class MarkerInfo(val marker: Marker, val infoWindowData: InfoWindowData)
+
 data class InfoWindowData(
     val name: String,
     val phone: String,

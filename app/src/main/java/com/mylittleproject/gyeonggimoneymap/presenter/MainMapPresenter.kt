@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.coroutineScope
 import com.mylittleproject.gyeonggimoneymap.data.InfoWindowData
+import com.mylittleproject.gyeonggimoneymap.data.MarkerInfo
 import com.mylittleproject.gyeonggimoneymap.network.CategorySearchHelper
 import com.mylittleproject.gyeonggimoneymap.network.Document
 import com.naver.maps.geometry.LatLng
@@ -20,7 +21,7 @@ class MainMapPresenter(
     private val lifecycle: Lifecycle
 ) :
     MainMapContract.MainMapPresenter {
-    private val markerList = mutableListOf<Marker>()
+    private val markerInfoList = mutableListOf<MarkerInfo>()
     private val infoWindow = InfoWindow()
 
     override fun onMapClick(pointf: PointF, latLng: LatLng) {
@@ -41,26 +42,27 @@ class MainMapPresenter(
             Log.d("count", searchList?.size.toString())
             clearMarkers()
             searchList?.let {
-                markerList.addAll(it.map { document ->
+                markerInfoList.addAll(it.map { document ->
                     val marker = Marker(LatLng(document.y.toDouble(), document.x.toDouble()))
                     marker.isIconPerspectiveEnabled = true
                     marker.captionText = document.placeName
                     marker.isHideCollidedSymbols = true
+                    val infoWindowData = InfoWindowData(
+                        document.placeName,
+                        document.phone,
+                        document.roadAddressName,
+                        document.addressName,
+                        KAKAO_SCHEME + document.placeUrl.substringAfterLast("/")
+                    )
                     mainMapView.displayMarker(marker)
                     marker.setOnClickListener { overlay ->
                         onMarkerClick(
                             overlay as Marker,
-                            InfoWindowData(
-                                document.placeName,
-                                document.phone,
-                                document.roadAddressName,
-                                document.addressName,
-                                KAKAO_SCHEME + document.placeUrl.substringAfterLast("/")
-                            )
+                            infoWindowData
                         )
                         true
                     }
-                    marker
+                    MarkerInfo(marker, infoWindowData)
                 })
             }
             mainMapView.hideProgressIndicator()
@@ -70,8 +72,8 @@ class MainMapPresenter(
     }
 
     private fun onMarkerClick(marker: Marker, infoWindowData: InfoWindowData) {
-        markerList.forEach { otherMarker ->
-            otherMarker.zIndex = 0
+        markerInfoList.forEach { otherMarkerInfo ->
+            otherMarkerInfo.marker.zIndex = 0
         }
         marker.zIndex = 1
         if (marker.infoWindow == null) {
@@ -82,8 +84,8 @@ class MainMapPresenter(
     }
 
     private fun clearMarkers() {
-        markerList.forEach { mainMapView.deleteMarker(it) }
-        markerList.clear()
+        markerInfoList.forEach { mainMapView.deleteMarker(it.marker) }
+        markerInfoList.clear()
     }
 
     companion object {
