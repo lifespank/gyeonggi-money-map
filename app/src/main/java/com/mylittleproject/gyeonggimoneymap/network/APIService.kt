@@ -26,6 +26,6 @@ interface APIService {
         @Query("pSize") pSize: String,
         @Query("CMPNM_NM") companyName: String,
         @Query("SIGUN_NM") siGunName: String,
-        @Query("REFINE_ROADNM_ADDR") lastPartOfAddress: String
+        @Query("REFINE_LOTNO_ADDR") lastPartOfAddress: String
     ): Response<GyeonggiSearchResponse>
 }

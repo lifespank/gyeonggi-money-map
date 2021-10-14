@@ -13,8 +13,8 @@ data class KakaoSearchResponse(
 
 @JsonClass(generateAdapter = true)
 data class Document(
-//    @Json(name = "address_name")
-//    val addressName: String = "",
+    @Json(name = "address_name")
+    val addressName: String = "",
 //    @Json(name = "category_group_code")
 //    val categoryGroupCode: String = "",
 //    @Json(name = "category_group_name")
@@ -37,11 +37,7 @@ data class Document(
     val x: String = "",
     @Json(name = "y")
     val y: String = ""
-) {
-    override fun toString(): String {
-        return listOf(placeName, phone, roadAddressName).joinToString("\n")
-    }
-}
+)
 
 @JsonClass(generateAdapter = true)
 data class Meta(

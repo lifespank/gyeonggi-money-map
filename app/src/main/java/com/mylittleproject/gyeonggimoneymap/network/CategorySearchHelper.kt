@@ -66,9 +66,10 @@ class CategorySearchHelper {
             coroutineScope {
                 documentList.map {
                     async {
-                        if (it.roadAddressName.isNotEmpty() && it.roadAddressName.substringBefore(" ") == "경기") {
+                        if (it.addressName.isNotEmpty() && it.addressName.substringBefore(" ") == "경기") {
                             val placeNameAddress =
-                                PlaceNameAddress(it.placeName, it.roadAddressName)
+                                PlaceNameAddress(it.placeName, it.addressName)
+                            Log.d("place", placeNameAddress.toString())
                             val gyeonggiResponse =
                                 apiServiceGyeonggi.searchGyeonggiMoneyPlace(
                                     GYEONGGI_KEY,
