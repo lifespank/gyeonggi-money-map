@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.mylittleproject.gyeonggimoneymap.R
 import com.mylittleproject.gyeonggimoneymap.data.InfoWindowData
 import com.mylittleproject.gyeonggimoneymap.data.StoreCategory
@@ -169,6 +170,10 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
 
     override fun disableCategoryClick() {
         isCategoryClickEnabled = false
+    }
+
+    override fun showSnackBar(listCount: Int) {
+        Snackbar.make(binding.root, "${listCount}곳 발견", Snackbar.LENGTH_SHORT).show()
     }
 
     private fun configMap() {

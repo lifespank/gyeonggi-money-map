@@ -22,6 +22,7 @@ interface MainMapContract {
         fun unDimMap()
         fun enableCategoryClick()
         fun disableCategoryClick()
+        fun showSnackBar(listCount: Int)
     }
 
     interface MainMapPresenter {

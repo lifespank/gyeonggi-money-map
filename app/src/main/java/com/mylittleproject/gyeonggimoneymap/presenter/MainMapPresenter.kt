@@ -67,6 +67,7 @@ class MainMapPresenter(
             }
             mainMapView.hideProgressIndicator()
             mainMapView.unDimMap()
+            mainMapView.showSnackBar(markerInfoList.size)
             mainMapView.enableCategoryClick()
         }
     }
