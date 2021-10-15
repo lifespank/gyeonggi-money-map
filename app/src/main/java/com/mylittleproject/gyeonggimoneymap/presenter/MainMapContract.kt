@@ -23,6 +23,7 @@ interface MainMapContract {
         fun enableCategoryClick()
         fun disableCategoryClick()
         fun showSnackBar(listCount: Int)
+        fun showNetworkError()
     }
 
     interface MainMapPresenter {

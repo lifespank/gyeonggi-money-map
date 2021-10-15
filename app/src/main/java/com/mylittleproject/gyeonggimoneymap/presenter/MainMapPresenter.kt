@@ -32,17 +32,16 @@ class MainMapPresenter(
         val x = cameraCoord.longitude.toString()
         val y = cameraCoord.latitude.toString()
         val radius = min(cameraCoord.distanceTo(leftUpperCoord).roundToInt(), 500)
-        var searchList: List<Document>?
         mainMapView.disableCategoryClick()
         mainMapView.dimMap()
         mainMapView.showProgressIndicator()
         lifecycle.coroutineScope.launch {
-            searchList = categorySearchHelper.searchByCategory(code, x, y, radius)
+            val searchList = categorySearchHelper.searchByCategory(code, x, y, radius)
             Log.d("searchList", searchList.toString())
             Log.d("count", searchList?.size.toString())
             clearMarkers()
-            searchList?.let {
-                markerInfoList.addAll(it.map { document ->
+            if (searchList != null) {
+                markerInfoList.addAll(searchList.map { document ->
                     val marker = Marker(LatLng(document.y.toDouble(), document.x.toDouble()))
                     marker.isIconPerspectiveEnabled = true
                     marker.captionText = document.placeName
@@ -64,6 +63,8 @@ class MainMapPresenter(
                     }
                     MarkerInfo(marker, infoWindowData)
                 })
+            } else {
+                mainMapView.showNetworkError()
             }
             mainMapView.hideProgressIndicator()
             mainMapView.unDimMap()
