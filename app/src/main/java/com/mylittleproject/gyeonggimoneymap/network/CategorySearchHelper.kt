@@ -3,6 +3,8 @@ package com.mylittleproject.gyeonggimoneymap.network
 import android.util.Log
 import com.mylittleproject.gyeonggimoneymap.common.GYEONGGI_KEY
 import com.mylittleproject.gyeonggimoneymap.data.PlaceNameAddress
+import com.mylittleproject.gyeonggimoneymap.util.refineCU
+import com.mylittleproject.gyeonggimoneymap.util.refineGS25
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -53,29 +55,49 @@ class CategorySearchHelper {
                     documentList.map {
                         async {
                             if (it.addressName.isNotEmpty() && it.addressName.substringBefore(" ") == "경기") {
-                                val placeNameAddress =
-                                    PlaceNameAddress(it.placeName, it.addressName)
-                                Log.d("place", placeNameAddress.toString())
-                                val gyeonggiResponse =
-                                    apiServiceGyeonggi.searchGyeonggiMoneyPlace(
-                                        GYEONGGI_KEY,
-                                        "json",
-                                        "1",
-                                        "1",
-                                        placeNameAddress.name,
-                                        placeNameAddress.siGun,
-                                        placeNameAddress.lastPartOfAddress
+                                val placeNameAddressList =
+                                    emptyList<PlaceNameAddress>().toMutableList()
+                                placeNameAddressList.add(
+                                    PlaceNameAddress(
+                                        it.placeName,
+                                        it.addressName
                                     )
-                                if (gyeonggiResponse.isSuccessful) {
-                                    val gyeonggiData = gyeonggiResponse.body()
-                                    if (gyeonggiData != null
-                                        && gyeonggiData.regionMnyFacltStus.isNotEmpty()
-                                        && gyeonggiData.regionMnyFacltStus[0].head[1].result.code == GYEONGGI_RESPONSE_CODE_VALID
-                                    ) {
-                                        mutex.withLock {
-                                            filteredDocumentList.add(it)
+                                )
+                                if (it.placeName.contains("CU")) {
+                                    val refinedCUList = refineCU(it.placeName)
+                                    placeNameAddressList.addAll(refinedCUList.map { refinedCU ->
+                                        PlaceNameAddress(refinedCU, it.addressName)
+                                    })
+                                }
+                                if (it.placeName.contains("GS25")) {
+                                    val refinedGS25List = refineGS25(it.placeName)
+                                    placeNameAddressList.addAll(refinedGS25List.map { refinedGS25 ->
+                                        PlaceNameAddress(refinedGS25, it.addressName)
+                                    })
+                                }
+                                placeNameAddressList.forEach { placeNameAddress ->
+                                    val gyeonggiResponse =
+                                        apiServiceGyeonggi.searchGyeonggiMoneyPlace(
+                                            GYEONGGI_KEY,
+                                            "json",
+                                            "1",
+                                            "1",
+                                            placeNameAddress.name,
+                                            placeNameAddress.siGun,
+                                            placeNameAddress.lastPartOfAddress
+                                        )
+                                    if (gyeonggiResponse.isSuccessful) {
+                                        val gyeonggiData = gyeonggiResponse.body()
+                                        if (gyeonggiData != null
+                                            && gyeonggiData.regionMnyFacltStus.isNotEmpty()
+                                            && gyeonggiData.regionMnyFacltStus[0].head[1].result.code == GYEONGGI_RESPONSE_CODE_VALID
+                                        ) {
+                                            mutex.withLock {
+                                                filteredDocumentList.add(it)
+                                            }
+                                            Log.d("gyeonggiResponse", gyeonggiResponse.toString())
+                                            return@forEach
                                         }
-                                        Log.d("gyeonggiResponse", gyeonggiResponse.toString())
                                     }
                                 }
                             }
