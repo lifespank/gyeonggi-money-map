@@ -72,8 +72,12 @@ class MainMapPresenter(
     }
 
     override fun selectMarker(position: Int) {
-        mainMapView.moveCamera(markerInfoList[position].marker.position)
-        onMarkerClick(markerInfoList[position].marker)
+        try {
+            mainMapView.moveCamera(markerInfoList[position].marker.position)
+            onMarkerClick(markerInfoList[position].marker)
+        } catch (e: Exception) {
+            Log.e("indexerror", e.message.toString())
+        }
     }
 
     private fun onMarkerClick(marker: Marker) {
