@@ -25,41 +25,26 @@ class CategorySearchHelper {
         sort: String = "distance"
     ): List<Document>? {
         try {
-            var documentList: MutableList<Document>? = null
+            var pageNum = page
+            val documentList: MutableList<Document> = emptyList<Document>().toMutableList()
             val searchResponse =
-                apiServiceKakao.searchByCategory(categoryGroupCode, x, y, radius, page, sort)
-            if (searchResponse.isSuccessful) {
-                val data = searchResponse.body()
-                if (data != null) {
-                    documentList = data.documents.toMutableList()
-                    if (!data.meta.isEnd) {
-                        val secondResponse =
-                            apiServiceKakao.searchByCategory(
-                                categoryGroupCode,
-                                x,
-                                y,
-                                radius,
-                                page + 1,
-                                sort
-                            )
-                        if (secondResponse.isSuccessful) {
-                            val secondData = secondResponse.body()
-                            if (secondData != null) {
-                                documentList.addAll(secondData.documents)
-                            } else {
-                                Log.e("kakao error", "Second Response error")
-                            }
-                        } else {
-                            Log.e("kakao error", "Second Response error")
-                        }
-                    }
-                } else {
-                    Log.e("kakao error", "First Response Error")
-                }
-            } else {
-                Log.e("kakao error", "First Response Error")
+                apiServiceKakao.searchByCategory(categoryGroupCode, x, y, radius, pageNum, sort)
+            var data = searchResponse.body()
+            while (data != null && !data.meta.isEnd) {
+                Log.d("data", data.toString())
+                documentList.addAll(data.documents)
+                data = apiServiceKakao.searchByCategory(
+                    categoryGroupCode,
+                    x,
+                    y,
+                    radius,
+                    ++pageNum,
+                    sort
+                ).body()
             }
-
+            if (data != null) {
+                documentList.addAll(data.documents)
+            }
             Log.d("documents", documentList.toString())
             if (!documentList.isNullOrEmpty()) {
                 val filteredDocumentList = mutableListOf<Document>()
@@ -82,10 +67,10 @@ class CategorySearchHelper {
                                         placeNameAddress.lastPartOfAddress
                                     )
                                 if (gyeonggiResponse.isSuccessful) {
-                                    val data = gyeonggiResponse.body()
-                                    if (data != null
-                                        && data.regionMnyFacltStus.isNotEmpty()
-                                        && data.regionMnyFacltStus[0].head[1].result.code == GYEONGGI_RESPONSE_CODE_VALID
+                                    val gyeonggiData = gyeonggiResponse.body()
+                                    if (gyeonggiData != null
+                                        && gyeonggiData.regionMnyFacltStus.isNotEmpty()
+                                        && gyeonggiData.regionMnyFacltStus[0].head[1].result.code == GYEONGGI_RESPONSE_CODE_VALID
                                     ) {
                                         mutex.withLock {
                                             filteredDocumentList.add(it)
