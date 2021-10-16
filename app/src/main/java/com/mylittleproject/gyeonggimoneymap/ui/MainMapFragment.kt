@@ -13,7 +13,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.annotation.DimenRes
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
@@ -174,9 +173,6 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
         Snackbar.make(binding.root, "${listCount}곳 발견", Snackbar.LENGTH_SHORT).show()
     }
 
-    override fun showNetworkError() {
-        Toast.makeText(context, "네트워크 에러", Toast.LENGTH_SHORT).show()
-    }
 
     override fun showInfo(list: List<InfoWindowData>) {
         infoListAdapter.submitList(list)

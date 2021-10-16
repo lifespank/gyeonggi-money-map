@@ -68,8 +68,6 @@ class MainMapPresenter(
                     }
                     MarkerInfo(marker, infoWindowData)
                 })
-            } else {
-                mainMapView.showNetworkError()
             }
             mainMapView.hideLoading()
             mainMapView.showSnackBar(markerInfoList.size)

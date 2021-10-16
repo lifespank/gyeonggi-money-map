@@ -3,7 +3,6 @@ package com.mylittleproject.gyeonggimoneymap.presenter
 import android.graphics.PointF
 import com.mylittleproject.gyeonggimoneymap.data.InfoWindowData
 import com.naver.maps.geometry.LatLng
-import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
 
 interface MainMapContract {
@@ -15,7 +14,6 @@ interface MainMapContract {
         fun enableCategoryClick()
         fun disableCategoryClick()
         fun showSnackBar(listCount: Int)
-        fun showNetworkError()
         fun showInfo(list: List<InfoWindowData>)
         fun moveCamera(latLng: LatLng)
         fun selectViewPager(position: Int)
