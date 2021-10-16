@@ -33,8 +33,7 @@ class MainMapPresenter(
         val y = cameraCoord.latitude.toString()
         val radius = min(cameraCoord.distanceTo(leftUpperCoord).roundToInt(), 500)
         mainMapView.disableCategoryClick()
-        mainMapView.dimMap()
-        mainMapView.showProgressIndicator()
+        mainMapView.showLoading()
         lifecycle.coroutineScope.launch {
             val searchList = categorySearchHelper.searchByCategory(code, x, y, radius)
             Log.d("searchList", searchList.toString())
@@ -66,8 +65,7 @@ class MainMapPresenter(
             } else {
                 mainMapView.showNetworkError()
             }
-            mainMapView.hideProgressIndicator()
-            mainMapView.unDimMap()
+            mainMapView.hideLoading()
             mainMapView.showSnackBar(markerInfoList.size)
             mainMapView.enableCategoryClick()
         }

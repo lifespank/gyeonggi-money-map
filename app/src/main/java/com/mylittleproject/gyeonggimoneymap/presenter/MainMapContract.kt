@@ -16,10 +16,8 @@ interface MainMapContract {
             infoWindowData: InfoWindowData
         )
 
-        fun showProgressIndicator()
-        fun hideProgressIndicator()
-        fun dimMap()
-        fun unDimMap()
+        fun showLoading()
+        fun hideLoading()
         fun enableCategoryClick()
         fun disableCategoryClick()
         fun showSnackBar(listCount: Int)

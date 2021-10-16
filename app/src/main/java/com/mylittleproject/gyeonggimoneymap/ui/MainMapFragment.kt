@@ -149,20 +149,12 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
         infoWindow.open(marker)
     }
 
-    override fun showProgressIndicator() {
-        binding.piCircular.visibility = View.VISIBLE
+    override fun showLoading() {
+        binding.llLoading.isVisible = true
     }
 
-    override fun hideProgressIndicator() {
-        binding.piCircular.visibility = View.GONE
-    }
-
-    override fun dimMap() {
-        binding.vDim.visibility = View.VISIBLE
-    }
-
-    override fun unDimMap() {
-        binding.vDim.visibility = View.GONE
+    override fun hideLoading() {
+        binding.llLoading.isVisible = false
     }
 
     override fun enableCategoryClick() {
