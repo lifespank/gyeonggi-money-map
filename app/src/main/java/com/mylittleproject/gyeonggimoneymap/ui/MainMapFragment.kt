@@ -71,7 +71,7 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
         mapFragment.getMapAsync(this)
         catetoryRecyclerView = binding.rvCategory
         catetoryRecyclerView.adapter = categoryListAdapter
-        categoryListAdapter.submitList(StoreCategory.toList())
+        categoryListAdapter.submitList(StoreCategory.values().toList())
         setViewPager()
         setSpinner()
     }
