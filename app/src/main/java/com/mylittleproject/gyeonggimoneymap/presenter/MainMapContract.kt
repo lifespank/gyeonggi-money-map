@@ -10,22 +10,20 @@ interface MainMapContract {
     interface MainMapView {
         fun deleteMarker(marker: Marker)
         fun displayMarker(marker: Marker)
-        fun attachInfoWindow(
-            infoWindow: InfoWindow,
-            marker: Marker,
-            infoWindowData: InfoWindowData
-        )
-
         fun showLoading()
         fun hideLoading()
         fun enableCategoryClick()
         fun disableCategoryClick()
         fun showSnackBar(listCount: Int)
         fun showNetworkError()
+        fun showInfo(list: List<InfoWindowData>)
+        fun moveCamera(latLng: LatLng)
+        fun selectViewPager(position: Int)
     }
 
     interface MainMapPresenter {
         fun onMapClick(pointf: PointF, latLng: LatLng)
         fun searchByCategory(code: String, cameraCoord: LatLng, leftUpperCoord: LatLng)
+        fun selectMarker(position: Int)
     }
 }

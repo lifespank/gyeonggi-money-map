@@ -1,7 +1,9 @@
 package com.mylittleproject.gyeonggimoneymap.ui
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.PointF
+import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -10,25 +12,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.DimenRes
 import androidx.core.view.isVisible
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.snackbar.Snackbar
 import com.mylittleproject.gyeonggimoneymap.R
 import com.mylittleproject.gyeonggimoneymap.data.InfoWindowData
 import com.mylittleproject.gyeonggimoneymap.data.StoreCategory
 import com.mylittleproject.gyeonggimoneymap.databinding.FragmentMapBinding
-import com.mylittleproject.gyeonggimoneymap.databinding.InfoWindowViewBinding
 import com.mylittleproject.gyeonggimoneymap.network.CategorySearchHelper
 import com.mylittleproject.gyeonggimoneymap.presenter.MainMapContract
 import com.mylittleproject.gyeonggimoneymap.presenter.MainMapPresenter
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
-import com.naver.maps.map.LocationTrackingMode
-import com.naver.maps.map.MapFragment
-import com.naver.maps.map.NaverMap
-import com.naver.maps.map.OnMapReadyCallback
-import com.naver.maps.map.overlay.InfoWindow
+import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
 
@@ -39,8 +37,10 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
     private lateinit var locationSource: FusedLocationSource
     private lateinit var mainMapPresenter: MainMapContract.MainMapPresenter
     private lateinit var catetoryRecyclerView: RecyclerView
-    private val adapter =
+    private val categoryListAdapter =
         CategoryListAdapter { code, adapterPosition -> onItemClick(code, adapterPosition) }
+    private val infoListAdapter = InfoListAdapter()
+    private lateinit var infoViewPager: ViewPager2
     private var isCategoryClickEnabled = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,9 +67,35 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
             }
         mapFragment.getMapAsync(this)
         catetoryRecyclerView = binding.rvCategory
-        catetoryRecyclerView.adapter = adapter
-        adapter.submitList(StoreCategory.toList())
-        lifecycleScope
+        catetoryRecyclerView.adapter = categoryListAdapter
+        categoryListAdapter.submitList(StoreCategory.toList())
+        setViewPager()
+    }
+
+    private fun setViewPager() {
+        infoViewPager = binding.vpInfo
+        infoViewPager.adapter = infoListAdapter
+        infoViewPager.offscreenPageLimit = 1
+
+        val nextItemVisiblePx = resources.getDimension(R.dimen.viewpager_next_item_visible)
+        val currentItemHorizontalMarginPx =
+            resources.getDimension(R.dimen.viewpager_current_item_horizontal_margin)
+        val pageTranslationX = nextItemVisiblePx + currentItemHorizontalMarginPx
+        val pageTransformer = ViewPager2.PageTransformer { page: View, position: Float ->
+            page.translationX = -pageTranslationX * position
+        }
+        infoViewPager.setPageTransformer(pageTransformer)
+
+        val itemDecoration = HorizontalMarginItemDecoration(
+            requireContext(),
+            R.dimen.viewpager_current_item_horizontal_margin
+        )
+        infoViewPager.addItemDecoration(itemDecoration)
+        infoViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                mainMapPresenter.selectMarker(position)
+            }
+        })
     }
 
     override fun onDestroyView() {
@@ -113,42 +139,6 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
         marker.map = naverMap
     }
 
-    override fun attachInfoWindow(
-        infoWindow: InfoWindow,
-        marker: Marker,
-        infoWindowData: InfoWindowData
-    ) {
-        val binding: InfoWindowViewBinding = InfoWindowViewBinding.inflate(layoutInflater)
-        infoWindow.adapter = object : InfoWindow.DefaultViewAdapter(requireContext()) {
-            override fun getContentView(infoWindow: InfoWindow): View {
-                if (infoWindowData.roadAddress.isNotEmpty()) {
-                    binding.tvAddress.text = infoWindowData.roadAddress
-                } else {
-                    binding.tvAddress.text = infoWindowData.lotNameAddress
-                }
-                binding.tvTitle.text = infoWindowData.name
-                if (infoWindowData.phone.isNotEmpty()) {
-                    binding.tvPhone.text = infoWindowData.phone
-                } else {
-                    binding.tvPhone.isVisible = false
-                }
-                return binding.root
-            }
-        }
-        infoWindow.setOnClickListener {
-            try {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(infoWindowData.url))
-                startActivity(intent)
-            } catch (e: Exception) {
-                Log.e("error", "No kakakoMap")
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(KAKAO_MAP_PLAYSTORE))
-                startActivity(intent)
-            }
-            true
-        }
-        infoWindow.open(marker)
-    }
-
     override fun showLoading() {
         binding.llLoading.isVisible = true
     }
@@ -173,6 +163,20 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
         Toast.makeText(context, "네트워크 에러", Toast.LENGTH_SHORT).show()
     }
 
+    override fun showInfo(list: List<InfoWindowData>) {
+        infoListAdapter.submitList(list)
+    }
+
+    override fun moveCamera(latLng: LatLng) {
+        val cameraUpdate = CameraUpdate.scrollTo(latLng)
+            .animate(CameraAnimation.Easing)
+        naverMap.moveCamera(cameraUpdate)
+    }
+
+    override fun selectViewPager(position: Int) {
+        infoViewPager.currentItem = position
+    }
+
     private fun configMap() {
         naverMap.uiSettings.isLocationButtonEnabled = true
         naverMap.extent = LatLngBounds(LatLng(31.43, 122.37), LatLng(44.35, 132.0))
@@ -181,15 +185,29 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
     private fun onItemClick(code: String, adapterPosition: Int) {
         if (isCategoryClickEnabled) {
             Log.d("code", code)
-            val prevPosition = adapter.selectedPosition
-            adapter.selectedPosition = adapterPosition
-            adapter.notifyItemChanged(prevPosition)
-            adapter.notifyItemChanged(adapter.selectedPosition)
+            val prevPosition = categoryListAdapter.selectedPosition
+            categoryListAdapter.selectedPosition = adapterPosition
+            categoryListAdapter.notifyItemChanged(prevPosition)
+            categoryListAdapter.notifyItemChanged(categoryListAdapter.selectedPosition)
             mainMapPresenter.searchByCategory(
                 code, naverMap.cameraPosition.target, naverMap.projection.fromScreenLocation(
                     PointF(0F, 0F)
                 )
             )
+        }
+    }
+
+    class HorizontalMarginItemDecoration(context: Context, @DimenRes horizontalMarginInDp: Int) :
+        RecyclerView.ItemDecoration() {
+
+        private val horizontalMarginInPx: Int =
+            context.resources.getDimension(horizontalMarginInDp).toInt()
+
+        override fun getItemOffsets(
+            outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State
+        ) {
+            outRect.right = horizontalMarginInPx
+            outRect.left = horizontalMarginInPx
         }
     }
 

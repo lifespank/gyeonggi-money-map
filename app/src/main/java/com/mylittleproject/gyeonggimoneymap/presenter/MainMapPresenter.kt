@@ -40,24 +40,23 @@ class MainMapPresenter(
             Log.d("count", searchList?.size.toString())
             clearMarkers()
             if (searchList != null) {
-                markerInfoList.addAll(searchList.map { document ->
+                markerInfoList.addAll(searchList.mapIndexed { idx, document ->
                     val marker = Marker(LatLng(document.y.toDouble(), document.x.toDouble()))
                     marker.isIconPerspectiveEnabled = true
                     marker.captionText = document.placeName
                     marker.isHideCollidedSymbols = true
                     val infoWindowData = InfoWindowData(
+                        idx,
                         document.placeName,
                         document.phone,
                         document.roadAddressName,
                         document.addressName,
-                        KAKAO_SCHEME + document.placeUrl.substringAfterLast("/")
+                        KAKAO_SCHEME + document.placeUrl.substringAfterLast("/"),
                     )
                     mainMapView.displayMarker(marker)
                     marker.setOnClickListener { overlay ->
-                        onMarkerClick(
-                            overlay as Marker,
-                            infoWindowData
-                        )
+                        onMarkerClick(overlay as Marker)
+                        mainMapView.selectViewPager(idx)
                         true
                     }
                     MarkerInfo(marker, infoWindowData)
@@ -67,20 +66,21 @@ class MainMapPresenter(
             }
             mainMapView.hideLoading()
             mainMapView.showSnackBar(markerInfoList.size)
+            mainMapView.showInfo(markerInfoList.map { it.infoWindowData })
             mainMapView.enableCategoryClick()
         }
     }
 
-    private fun onMarkerClick(marker: Marker, infoWindowData: InfoWindowData) {
+    override fun selectMarker(position: Int) {
+        mainMapView.moveCamera(markerInfoList[position].marker.position)
+        onMarkerClick(markerInfoList[position].marker)
+    }
+
+    private fun onMarkerClick(marker: Marker) {
         markerInfoList.forEach { otherMarkerInfo ->
             otherMarkerInfo.marker.zIndex = 0
         }
         marker.zIndex = 1
-        if (marker.infoWindow == null) {
-            mainMapView.attachInfoWindow(infoWindow, marker, infoWindowData)
-        } else {
-            infoWindow.close()
-        }
     }
 
     private fun clearMarkers() {
