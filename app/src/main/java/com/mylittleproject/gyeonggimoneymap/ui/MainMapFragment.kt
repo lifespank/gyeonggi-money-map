@@ -39,7 +39,7 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
     private lateinit var catetoryRecyclerView: RecyclerView
     private val categoryListAdapter =
         CategoryListAdapter { code, adapterPosition -> onItemClick(code, adapterPosition) }
-    private val infoListAdapter = InfoListAdapter()
+    private val infoListAdapter = InfoListAdapter { link -> onLinkClick(link) }
     private lateinit var infoViewPager: ViewPager2
     private var isCategoryClickEnabled = true
 
@@ -194,6 +194,17 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
                     PointF(0F, 0F)
                 )
             )
+        }
+    }
+
+    private fun onLinkClick(link: String) {
+        try {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
+            startActivity(intent)
+        } catch(e: Exception) {
+            Log.e("error", "No kakakoMap")
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(KAKAO_MAP_PLAYSTORE))
+            startActivity(intent)
         }
     }
 

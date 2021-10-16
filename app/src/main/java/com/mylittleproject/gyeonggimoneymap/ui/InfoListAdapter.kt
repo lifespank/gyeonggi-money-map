@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mylittleproject.gyeonggimoneymap.data.InfoWindowData
 import com.mylittleproject.gyeonggimoneymap.databinding.InfoWindowViewBinding
 
-class InfoListAdapter :
+class InfoListAdapter(private val onLinkClick: (String) -> Unit) :
     ListAdapter<InfoWindowData, InfoListAdapter.InfoWindowViewHolder>(object :
         DiffUtil.ItemCallback<InfoWindowData>() {
 
@@ -26,8 +26,9 @@ class InfoListAdapter :
             InfoWindowViewBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
-                false
-            )
+                false,
+            ),
+            onLinkClick
         )
     }
 
@@ -35,7 +36,10 @@ class InfoListAdapter :
         holder.bind(getItem(position))
     }
 
-    class InfoWindowViewHolder(private val binding: InfoWindowViewBinding) :
+    class InfoWindowViewHolder(
+        private val binding: InfoWindowViewBinding,
+        private val onLinkClick: (String) -> Unit
+    ) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(infoWindowData: InfoWindowData) {
@@ -46,6 +50,9 @@ class InfoListAdapter :
             }
             binding.tvTitle.text = infoWindowData.name
             binding.tvPhone.text = infoWindowData.phone
+            binding.tvSpecs.setOnClickListener {
+                onLinkClick(infoWindowData.url)
+            }
         }
     }
 }
