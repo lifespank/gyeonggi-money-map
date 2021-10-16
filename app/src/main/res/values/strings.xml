@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">GyeonngiMoneyMap</string>
     <string name="specs">상세보기(카카오맵)</string>
+    <string name="view_pager_position">%d/%d</string>
 </resources>

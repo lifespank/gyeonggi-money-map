@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.mylittleproject.gyeonggimoneymap.R
 import com.mylittleproject.gyeonggimoneymap.data.InfoWindowData
 import com.mylittleproject.gyeonggimoneymap.databinding.InfoWindowViewBinding
 
@@ -33,7 +34,7 @@ class InfoListAdapter(private val onLinkClick: (String) -> Unit) :
     }
 
     override fun onBindViewHolder(holder: InfoWindowViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), currentList.size)
     }
 
     class InfoWindowViewHolder(
@@ -42,7 +43,7 @@ class InfoListAdapter(private val onLinkClick: (String) -> Unit) :
     ) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(infoWindowData: InfoWindowData) {
+        fun bind(infoWindowData: InfoWindowData, listSize: Int) {
             if (infoWindowData.roadAddress.isNotEmpty()) {
                 binding.tvAddress.text = infoWindowData.roadAddress
             } else {
@@ -53,6 +54,11 @@ class InfoListAdapter(private val onLinkClick: (String) -> Unit) :
             binding.tvSpecs.setOnClickListener {
                 onLinkClick(infoWindowData.url)
             }
+            binding.tvPosition.text = itemView.context.getString(
+                R.string.view_pager_position,
+                infoWindowData.position + 1,
+                listSize
+            )
         }
     }
 }
