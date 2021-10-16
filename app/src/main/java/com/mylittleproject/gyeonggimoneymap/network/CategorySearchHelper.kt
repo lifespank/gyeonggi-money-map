@@ -57,23 +57,23 @@ class CategorySearchHelper {
                             if (it.addressName.isNotEmpty() && it.addressName.substringBefore(" ") == "경기") {
                                 val placeNameAddressList =
                                     emptyList<PlaceNameAddress>().toMutableList()
-                                placeNameAddressList.add(
-                                    PlaceNameAddress(
-                                        it.placeName,
-                                        it.addressName
-                                    )
-                                )
-                                if (it.placeName.contains("CU")) {
+                                if (it.placeName.contains("CU") || it.placeName.contains("씨유")) {
                                     val refinedCUList = refineCU(it.placeName)
                                     placeNameAddressList.addAll(refinedCUList.map { refinedCU ->
                                         PlaceNameAddress(refinedCU, it.addressName)
                                     })
-                                }
-                                if (it.placeName.contains("GS25")) {
+                                } else if (it.placeName.contains("GS25")) {
                                     val refinedGS25List = refineGS25(it.placeName)
                                     placeNameAddressList.addAll(refinedGS25List.map { refinedGS25 ->
                                         PlaceNameAddress(refinedGS25, it.addressName)
                                     })
+                                } else {
+                                    placeNameAddressList.add(
+                                        PlaceNameAddress(
+                                            it.placeName,
+                                            it.addressName
+                                        )
+                                    )
                                 }
                                 placeNameAddressList.forEach { placeNameAddress ->
                                     val gyeonggiResponse =
