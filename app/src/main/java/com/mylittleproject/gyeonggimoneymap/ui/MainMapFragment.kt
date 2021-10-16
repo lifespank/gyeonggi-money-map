@@ -11,6 +11,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.annotation.DimenRes
 import androidx.core.view.isVisible
@@ -19,6 +21,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.snackbar.Snackbar
 import com.mylittleproject.gyeonggimoneymap.R
 import com.mylittleproject.gyeonggimoneymap.data.InfoWindowData
+import com.mylittleproject.gyeonggimoneymap.data.SiGun
 import com.mylittleproject.gyeonggimoneymap.data.StoreCategory
 import com.mylittleproject.gyeonggimoneymap.databinding.FragmentMapBinding
 import com.mylittleproject.gyeonggimoneymap.network.CategorySearchHelper
@@ -30,7 +33,8 @@ import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
 
-class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapView {
+class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapView,
+    AdapterView.OnItemSelectedListener {
     private var _binding: FragmentMapBinding? = null
     private val binding get() = _binding!!
     private lateinit var naverMap: NaverMap
@@ -70,6 +74,17 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
         catetoryRecyclerView.adapter = categoryListAdapter
         categoryListAdapter.submitList(StoreCategory.toList())
         setViewPager()
+        setSpinner()
+    }
+
+    private fun setSpinner() {
+        val arrayAdapter = ArrayAdapter(
+            requireContext(),
+            R.layout.support_simple_spinner_dropdown_item,
+            SiGun.toNameList()
+        )
+        binding.spSiGun.adapter = arrayAdapter
+        binding.spSiGun.onItemSelectedListener = this
     }
 
     private fun setViewPager() {
@@ -168,9 +183,17 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
     }
 
     override fun moveCamera(latLng: LatLng) {
-        val cameraUpdate = CameraUpdate.scrollTo(latLng)
-            .animate(CameraAnimation.Easing)
-        naverMap.moveCamera(cameraUpdate)
+        if (this::naverMap.isInitialized) {
+            val currentCameraLatLng = naverMap.cameraPosition.target
+            val cameraUpdate = if (currentCameraLatLng.distanceTo(latLng) < 2000F) {
+                CameraUpdate.scrollTo(latLng)
+                    .animate(CameraAnimation.Easing)
+            } else {
+                CameraUpdate.scrollTo(latLng)
+                    .animate(CameraAnimation.Fly, 2000)
+            }
+            naverMap.moveCamera(cameraUpdate)
+        }
     }
 
     override fun selectViewPager(position: Int) {
@@ -201,7 +224,7 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
         try {
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
             startActivity(intent)
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             Log.e("error", "No kakakoMap")
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(KAKAO_MAP_PLAYSTORE))
             startActivity(intent)
@@ -225,5 +248,16 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
     companion object {
         const val LOCATION_PERMISSION_REQUEST_CODE = 1000
         const val KAKAO_MAP_PLAYSTORE = "market://details?id=net.daum.android.map"
+    }
+
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        if (parent != null) {
+            val siGun = parent.getItemAtPosition(position)
+            mainMapPresenter.setSiGun(siGun as String)
+        }
+    }
+
+    override fun onNothingSelected(parent: AdapterView<*>?) {
+        //nothing
     }
 }

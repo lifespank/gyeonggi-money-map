@@ -6,8 +6,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.coroutineScope
 import com.mylittleproject.gyeonggimoneymap.data.InfoWindowData
 import com.mylittleproject.gyeonggimoneymap.data.MarkerInfo
+import com.mylittleproject.gyeonggimoneymap.data.SiGun
 import com.mylittleproject.gyeonggimoneymap.network.CategorySearchHelper
-import com.mylittleproject.gyeonggimoneymap.network.Document
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
@@ -23,6 +23,13 @@ class MainMapPresenter(
     MainMapContract.MainMapPresenter {
     private val markerInfoList = mutableListOf<MarkerInfo>()
     private val infoWindow = InfoWindow()
+    private lateinit var siGun: SiGun
+
+    override fun setSiGun(siGun: String) {
+        Log.d("siGun", siGun)
+        this.siGun = SiGun.fromName(siGun)
+        mainMapView.moveCamera(this.siGun.latLng)
+    }
 
     override fun onMapClick(pointf: PointF, latLng: LatLng) {
         infoWindow.close()

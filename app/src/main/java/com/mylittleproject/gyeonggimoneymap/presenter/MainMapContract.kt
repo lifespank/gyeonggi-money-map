@@ -25,5 +25,6 @@ interface MainMapContract {
         fun onMapClick(pointf: PointF, latLng: LatLng)
         fun searchByCategory(code: String, cameraCoord: LatLng, leftUpperCoord: LatLng)
         fun selectMarker(position: Int)
+        fun setSiGun(siGun: String)
     }
 }

@@ -14,7 +14,9 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:navermap_latitude="37.831275785867255"
+        app:navermap_longitude="127.5095740386528" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/vp_info"
@@ -37,6 +39,24 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:listitem="@layout/recycler_view_item_category" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/white_grey_outline"
+        app:layout_constraintBottom_toBottomOf="@id/sp_si_gun"
+        app:layout_constraintEnd_toEndOf="@id/sp_si_gun"
+        app:layout_constraintStart_toStartOf="@id/sp_si_gun"
+        app:layout_constraintTop_toTopOf="@id/sp_si_gun" />
+
+    <Spinner
+        android:id="@+id/sp_si_gun"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="40dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.mylittleproject.gyeonggimoneymap.ui.LoadingLayout
         android:id="@+id/ll_loading"
