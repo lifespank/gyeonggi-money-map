@@ -75,28 +75,33 @@ class CategorySearchHelper {
                                         )
                                     )
                                 }
-                                placeNameAddressList.forEach { placeNameAddress ->
-                                    val gyeonggiResponse =
-                                        apiServiceGyeonggi.searchGyeonggiMoneyPlace(
-                                            GYEONGGI_KEY,
-                                            "json",
-                                            "1",
-                                            "1",
-                                            placeNameAddress.name,
-                                            placeNameAddress.siGun,
-                                            placeNameAddress.lastPartOfAddress
-                                        )
-                                    if (gyeonggiResponse.isSuccessful) {
-                                        val gyeonggiData = gyeonggiResponse.body()
-                                        if (gyeonggiData != null
-                                            && gyeonggiData.regionMnyFacltStus.isNotEmpty()
-                                            && gyeonggiData.regionMnyFacltStus[0].head[1].result.code == GYEONGGI_RESPONSE_CODE_VALID
-                                        ) {
-                                            mutex.withLock {
-                                                filteredDocumentList.add(it)
+                                run {
+                                    placeNameAddressList.forEach { placeNameAddress ->
+                                        val gyeonggiResponse =
+                                            apiServiceGyeonggi.searchGyeonggiMoneyPlace(
+                                                GYEONGGI_KEY,
+                                                "json",
+                                                "1",
+                                                "1",
+                                                placeNameAddress.name,
+                                                placeNameAddress.siGun,
+                                                placeNameAddress.lastPartOfAddress
+                                            )
+                                        if (gyeonggiResponse.isSuccessful) {
+                                            val gyeonggiData = gyeonggiResponse.body()
+                                            if (gyeonggiData != null
+                                                && gyeonggiData.regionMnyFacltStus.isNotEmpty()
+                                                && gyeonggiData.regionMnyFacltStus[0].head[1].result.code == GYEONGGI_RESPONSE_CODE_VALID
+                                            ) {
+                                                mutex.withLock {
+                                                    filteredDocumentList.add(it)
+                                                }
+                                                Log.d(
+                                                    "gyeonggiResponse",
+                                                    gyeonggiResponse.toString()
+                                                )
+                                                return@run
                                             }
-                                            Log.d("gyeonggiResponse", gyeonggiResponse.toString())
-                                            return@forEach
                                         }
                                     }
                                 }
