@@ -8,8 +8,6 @@ import com.mylittleproject.gyeonggimoneymap.util.refineGS25
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
@@ -25,7 +23,7 @@ class CategorySearchHelper {
         radius: Int,
         page: Int = 1,
         sort: String = "distance"
-    ): List<Document>? {
+    ): List<Document>? = coroutineScope {
         try {
             var pageNum = page
             val documentList: MutableList<Document> = emptyList<Document>().toMutableList()
@@ -49,71 +47,64 @@ class CategorySearchHelper {
             }
             Log.d("documents", documentList.toString())
             if (!documentList.isNullOrEmpty()) {
-                val filteredDocumentList = mutableListOf<Document>()
-                val mutex = Mutex()
-                coroutineScope {
-                    documentList.map {
-                        async {
-                            if (it.addressName.isNotEmpty() && it.addressName.substringBefore(" ") == "경기") {
-                                val placeNameAddressList =
-                                    emptyList<PlaceNameAddress>().toMutableList()
-                                if (it.placeName.contains("CU") || it.placeName.contains("씨유")) {
-                                    val refinedCUList = refineCU(it.placeName)
-                                    placeNameAddressList.addAll(refinedCUList.map { refinedCU ->
-                                        PlaceNameAddress(refinedCU, it.addressName)
-                                    })
-                                } else if (it.placeName.contains("GS25")) {
-                                    val refinedGS25List = refineGS25(it.placeName)
-                                    placeNameAddressList.addAll(refinedGS25List.map { refinedGS25 ->
-                                        PlaceNameAddress(refinedGS25, it.addressName)
-                                    })
-                                } else {
-                                    placeNameAddressList.add(
-                                        PlaceNameAddress(
-                                            it.placeName,
-                                            it.addressName
-                                        )
+                return@coroutineScope documentList.map {
+                    async {
+                        if (it.addressName.isNotEmpty() && it.addressName.substringBefore(" ") == "경기") {
+                            val placeNameAddressList =
+                                emptyList<PlaceNameAddress>().toMutableList()
+                            if (it.placeName.contains("CU") || it.placeName.contains("씨유")) {
+                                val refinedCUList = refineCU(it.placeName)
+                                placeNameAddressList.addAll(refinedCUList.map { refinedCU ->
+                                    PlaceNameAddress(refinedCU, it.addressName)
+                                })
+                            } else if (it.placeName.contains("GS25")) {
+                                val refinedGS25List = refineGS25(it.placeName)
+                                placeNameAddressList.addAll(refinedGS25List.map { refinedGS25 ->
+                                    PlaceNameAddress(refinedGS25, it.addressName)
+                                })
+                            } else {
+                                placeNameAddressList.add(
+                                    PlaceNameAddress(
+                                        it.placeName,
+                                        it.addressName
                                     )
-                                }
-                                run {
-                                    placeNameAddressList.forEach { placeNameAddress ->
-                                        val gyeonggiResponse =
-                                            apiServiceGyeonggi.searchGyeonggiMoneyPlace(
-                                                GYEONGGI_KEY,
-                                                "json",
-                                                "1",
-                                                "1",
-                                                placeNameAddress.name,
-                                                placeNameAddress.siGun,
-                                                placeNameAddress.lastPartOfAddress
-                                            )
-                                        if (gyeonggiResponse.isSuccessful) {
-                                            val gyeonggiData = gyeonggiResponse.body()
-                                            if (gyeonggiData != null
-                                                && gyeonggiData.regionMnyFacltStus.isNotEmpty()
-                                                && gyeonggiData.regionMnyFacltStus[0].head[1].result.code == GYEONGGI_RESPONSE_CODE_VALID
-                                            ) {
-                                                mutex.withLock {
-                                                    filteredDocumentList.add(it)
-                                                }
-                                                Log.d(
-                                                    "gyeonggiResponse",
-                                                    gyeonggiResponse.toString()
-                                                )
-                                                return@run
-                                            }
-                                        }
+                                )
+                            }
+                            placeNameAddressList.forEach { placeNameAddress ->
+                                val gyeonggiResponse =
+                                    apiServiceGyeonggi.searchGyeonggiMoneyPlace(
+                                        GYEONGGI_KEY,
+                                        "json",
+                                        "1",
+                                        "1",
+                                        placeNameAddress.name,
+                                        placeNameAddress.siGun,
+                                        placeNameAddress.lastPartOfAddress
+                                    )
+                                if (gyeonggiResponse.isSuccessful) {
+                                    val gyeonggiData = gyeonggiResponse.body()
+                                    if (gyeonggiData != null
+                                        && gyeonggiData.regionMnyFacltStus.isNotEmpty()
+                                        && gyeonggiData.regionMnyFacltStus[0].head[1].result.code == GYEONGGI_RESPONSE_CODE_VALID
+                                    ) {
+                                        Log.d(
+                                            "gyeonggiResponse",
+                                            gyeonggiResponse.toString()
+                                        )
+                                        return@async it
                                     }
                                 }
                             }
+                            return@async null
+                        } else {
+                            return@async null
                         }
-                    }.awaitAll()
-                }
-                return filteredDocumentList
+                    }
+                }.awaitAll().filterNotNull()
             }
-            return null
+            return@coroutineScope null
         } catch (e: Exception) {
-            return null
+            return@coroutineScope null
         }
     }
 
