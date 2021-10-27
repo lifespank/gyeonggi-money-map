@@ -79,7 +79,7 @@ class MainMapFragment : Fragment(), OnMapReadyCallback, MainMapContract.MainMapV
     private fun setSpinner() {
         val arrayAdapter = ArrayAdapter(
             requireContext(),
-            R.layout.support_simple_spinner_dropdown_item,
+            android.R.layout.simple_spinner_dropdown_item,
             SiGun.toNameList()
         )
         binding.spSiGun.adapter = arrayAdapter
